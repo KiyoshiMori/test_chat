@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        main: './src/app.js'
+        main: './src/main.js'
     },
     mode: 'development',
     output: {
@@ -40,6 +40,17 @@ module.exports = {
                         loader: "css-loader"
                     }
                 ]
+            },
+            {
+              test: /\.html$/,
+              use: [
+                  {
+                      loader: "file-loader",
+                      options: {
+                          name: "[name].html"
+                      }
+                  }
+              ]
             },
             {
                 test: /\.(jpg|gif|png)$/,
