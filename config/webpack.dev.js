@@ -16,6 +16,15 @@ module.exports = {
     module: {
         rules: [
             {
+              test: /\.js$/,
+              use: [
+                  {
+                      loader: "babel-loader"
+                  }
+              ],
+              exclude: /node_modules/,
+            },
+            {
                 test: /\.css$/,
                 use: [
                     {
@@ -23,6 +32,17 @@ module.exports = {
                     },
                     {
                         loader: "css-loader"
+                    }
+                ]
+            },
+            {
+                test: /\.(jpg|gif|png)$/,
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "images/[name].[ext]"
+                        }
                     }
                 ]
             }
