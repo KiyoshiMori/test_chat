@@ -1,1 +1,1 @@
-alert('start');
+require('webpack-hot-middleware/client');

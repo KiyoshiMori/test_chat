@@ -1,8 +1,9 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        main: './src/main.js'
+        main: './src/app.js'
     },
     mode: 'development',
     output: {
@@ -11,7 +12,12 @@ module.exports = {
         publicPath: '/'
     },
     devServer: {
-        contentBase: 'dist'
+        contentBase: 'dist',
+        overlay: true,
+        hot: true,
+        stats: {
+            colors: true,
+        }
     },
     module: {
         rules: [
@@ -47,5 +53,8 @@ module.exports = {
                 ]
             }
         ]
-    }
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin()
+    ]
 };

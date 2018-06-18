@@ -1,8 +1,10 @@
 {
   "presets": [
-    "env",
-    {
-      "debug": true
-    }
+    [
+      "env",
+      {
+        "debug": true
+      }
+    ]
   ]
 }
