@@ -5,6 +5,7 @@
       {
         "debug": true
       }
-    ]
+    ],
+    "babel-preset-react"
   ]
 }
