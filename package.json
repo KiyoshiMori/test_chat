@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "my test chat",
   "scripts": {
-    "start": "webpack-dev-server --config=config/webpack.dev.js",
-    "build": "webpack --config=config/webpack.dev.js",
-    "dev": "nodemon --watch config --watch src/server/main.js"
+    "devserver": "nodemon --watch config --watch src/server/main.js",
+    "dev": "NODE_ENV=development nodemon --watch config --watch src/server --inspect src/server/main.js"
   },
   "dependencies": {
     "babel-preset-react": "^6.24.1",
