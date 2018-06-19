@@ -1,25 +1,20 @@
 const path = require('path');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
+    name: 'server',
     entry: {
-        main: './src/main.js'
+        server: './src/server/main.js'
     },
-    mode: 'development',
     output: {
         filename: '[name]-bundle.js',
-        path: path.resolve(__dirname, '../dist'),
-        publicPath: '/'
+        path: path.resolve(__dirname, '../build'),
     },
-    devServer: {
-        contentBase: 'dist',
-        overlay: true,
-        hot: true,
-        stats: {
-            colors: true,
-        }
-    },
-    module: {
+    mode: 'production',
+    target: 'node',
+	externals: nodeExternals(),
+	module: {
         rules: [
             {
               test: /\.js$/,
@@ -58,7 +53,8 @@ module.exports = {
                     {
                         loader: "file-loader",
                         options: {
-                            name: "images/[name].[ext]"
+                            name: "images/[name].[ext]",
+	                        emitFile: false
                         }
                     }
                 ]
@@ -66,6 +62,5 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
     ]
 };
