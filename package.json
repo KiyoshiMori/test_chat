@@ -4,7 +4,8 @@
   "description": "my test chat",
   "scripts": {
     "dev": "NODE_ENV=development BABEL_ENV=development nodemon --watch config --watch src/server --inspect src/server/main.js",
-    "prod": "NODE_ENV=productiont BABEL_ENV=production node src/server/main.js"
+    "prod": "NODE_ENV=productiont BABEL_ENV=production node src/server/main.js",
+    "test": "NODE_ENV=production BABEL_ENV=production webpack --config=config/webpack.prod-client.js"
   },
   "dependencies": {
     "babel-preset-react": "^6.24.1",

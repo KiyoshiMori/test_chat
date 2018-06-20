@@ -48,6 +48,7 @@ if (isDev) {
     				${ReactDOMServer.renderToString(<App/>)}
 				</div>
     		</body>
+    		<script src="vendor-bundle.js"></script>
             <script src="main-bundle.js"></script>
 		</html>
 	`);

@@ -24,7 +24,19 @@ module.exports = {
             colors: true,
         }
     },
-    module: {
+	optimization: {
+		splitChunks: {
+			chunks: 'all',
+			cacheGroups: {
+				vendor: {
+					name: 'vendor',
+					chunks: "initial",
+					minChunks: 2
+				}
+			}
+		}
+	},
+	module: {
         rules: [
             {
               test: /\.js$/,
