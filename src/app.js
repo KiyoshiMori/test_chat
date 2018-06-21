@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import { AppContainer } from 'react-hot-loader'
 
-import Client from './client';
+import App from './client/Components/AppRoot';
 
 const render = Component => {
 	ReactDOM.hydrate(
@@ -14,11 +13,11 @@ const render = Component => {
 	);
 };
 
-render(Client);
+render(App);
 
 if (module.hot) {
-	module.hot.accept('./client', () => {
-		const newClient = require('./client').default;
-		render(newClient);
+	module.hot.accept('./client/Components/AppRoot', () => {
+		const newApp = require('./client/Components/AppRoot').default;
+		render(newApp);
 	});
 }
