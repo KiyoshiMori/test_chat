@@ -1,8 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-    entry: {
+	name: 'client',
+	mode: 'development',
+	entry: {
 	    vendor: ['react', 'react-dom'],
         main: [
         	'react-hot-loader/patch',
@@ -11,16 +14,16 @@ module.exports = {
 	        './src/main.js'
         ]
     },
-    mode: 'development',
     output: {
         filename: '[name]-bundle.js',
-        path: path.resolve(__dirname, '../dist'),
+	    chunkFilename: '[name].js',
+	    path: path.resolve(__dirname, '../dist'),
         publicPath: '/'
     },
     devServer: {
         contentBase: 'dist',
         overlay: true,
-        hot: true,
+        // hot: true,
         stats: {
             colors: true,
         }
@@ -38,26 +41,19 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader'
-                    }
-                ]
+                use: [MiniCSSExtractPlugin.loader, 'css-loader']
             },
-            {
-              test: /\.html$/,
-              use: [
-                  {
-                      loader: 'file-loader',
-                      options: {
-                          name: '[name].html'
-                      }
-                  }
-              ]
-            },
+            // {
+            //   test: /\.html$/,
+            //   use: [
+            //       {
+            //           loader: 'file-loader',
+            //           options: {
+            //               name: '[name].html'
+            //           }
+            //       }
+            //   ]
+            // },
             {
                 test: /\.(jpg|gif|png)$/,
                 use: [
@@ -72,6 +68,13 @@ module.exports = {
         ]
     },
     plugins: [
+        new MiniCSSExtractPlugin(),
+        new webpack.DefinePlugin({
+            "process.env": {
+                NODE_ENV: JSON.stringify('development'),
+                WEBPACK: true,
+            }
+        }),
         new webpack.HotModuleReplacementPlugin()
     ]
 };

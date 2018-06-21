@@ -4,16 +4,15 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
     name: 'server',
-    entry: {
-        server: './src/server/main.js'
-    },
-    output: {
-        filename: '[name]-bundle.js',
-        path: path.resolve(__dirname, '../build'),
-    },
-    mode: 'production',
-    target: 'node',
+	mode: 'production',
+	target: 'node',
 	externals: nodeExternals(),
+	entry: './src/server/render.js',
+    output: {
+        filename: 'prod-server-bundle.js',
+        path: path.resolve(__dirname, '../build'),
+	    libraryTarget: "commonjs2"
+    },
 	module: {
         rules: [
             {
@@ -27,14 +26,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [
-                    {
-                        loader: "style-loader"
-                    },
-                    {
-                        loader: "css-loader"
-                    }
-                ]
+                use: "css-loader",
             },
             {
               test: /\.html$/,

@@ -3,26 +3,35 @@ import path from 'path';
 import expressStaticGzip from "express-static-gzip";
 
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 
 import webpack from 'webpack';
+import webpackHotServerMiddleware from 'webpack-hot-server-middleware';
 
 import configDevClient from '../../config/webpack.dev-client';
-import configProdClietn from '../../config/webpack.prod-client';
+import configProdClient from '../../config/webpack.prod-client';
 import configDevServer from '../../config/webpack.dev-server';
 import configProdServer from '../../config/webpack.prod-server';
-
-import App from '../../src/client/index';
 
 const server = express();
 
 const isProd = process.env.BABEL_ENV === 'production';
 const isDev = !isProd;
+let isBuilt = false;
 
 console.log({ isDev });
 
+const done = () => {
+	console.log({ isBuilt });
+	if (isBuilt) return;
+
+	server.listen(8080, () => {
+		isBuilt = true;
+		console.log('server start:', 'localhost:', 8080);
+	});
+};
+
 if (isDev) {
-	const compiler = webpack([ configDevClient, configDevServer ]);
+	const compiler = webpack([configDevClient, configDevServer]);
 
 	const clientCompiler = compiler.compilers[0];
 	const serverCompiler = compiler.compilers[1];
@@ -32,32 +41,20 @@ if (isDev) {
 
 	server.use(webpackDevMW(compiler, configDevClient.devServer));
 	server.use(webpackHotMW(clientCompiler, configDevClient.devServer));
+	server.use(webpackHotServerMiddleware(compiler));
+	done();
 } else {
-	server.use(expressStaticGzip("dist", {
-			enableBrotli: true
-		})
-	);
-
 	// ssr
-	server.get("*", (req, res) => {
-		const html = (`
-		<html>
-    		<body>
-    			<h1>test</h1>
-        		<div id="root">
-    				${ReactDOMServer.renderToString(<App/>)}
-				</div>
-    		</body>
-    		<script src="vendor-bundle.js"></script>
-            <script src="main-bundle.js"></script>
-		</html>
-	`);
+	webpack([configProdClient, configProdServer]).run((err, stats) => {
+		server.use(expressStaticGzip("dist", {
+				enableBrotli: true
+			})
+		);
 
-		res.send(html);
+		const render = require("../../build/prod-server-bundle.js").default;
+
+		server.use(render());
+		done();
 	});
 	//
 }
-
-server.listen(8080, () => {
-	console.log('server start:', 'localhost:', 8080);
-});

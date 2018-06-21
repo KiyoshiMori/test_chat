@@ -4,16 +4,17 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
     name: 'server',
-    entry: {
-        server: './src/server/main.js'
-    },
-    output: {
-        filename: '[name]-bundle.js',
-        path: path.resolve(__dirname, '../build'),
-    },
-    mode: 'development',
-    target: 'node',
+	mode: 'development',
+	target: 'node',
 	externals: nodeExternals(),
+	entry: './src/server/render.js',
+    output: {
+        filename: 'dev-server-bundle.js',
+	    chunkFilename: '[name].js',
+	    path: path.resolve(__dirname, '../build'),
+	    libraryTarget: "commonjs2"
+    },
+	devtool: 'source-map',
 	module: {
         rules: [
             {
@@ -27,14 +28,12 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [
-                    {
-                        loader: "style-loader"
-                    },
-                    {
-                        loader: "css-loader"
-                    }
-                ]
+	            use: {
+		            loader: 'css-loader',
+		            options: {
+			            minimize: true
+		            }
+	            }
             },
             {
               test: /\.html$/,
@@ -62,5 +61,13 @@ module.exports = {
         ]
     },
     plugins: [
+	    new webpack.optimize.LimitChunkCountPlugin({
+		    maxChunks: 1
+	    }),
+	    new webpack.DefinePlugin({
+		    "process.env": {
+			    NODE_ENV: JSON.stringify('development'),
+		    }
+	    }),
     ]
 };

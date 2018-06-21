@@ -12,7 +12,7 @@ module.exports = {
     },
     mode: 'production',
     output: {
-        filename: '[name]-bundle.js',
+        filename: 'prod-client-bundle.js',
         path: path.resolve(__dirname, '../dist'),
         publicPath: '/'
     },
