@@ -51,9 +51,11 @@ if (isDev) {
 			})
 		);
 
+		const clientStats = stats.toJson().children[0]
+
 		const render = require("../../build/prod-server-bundle.js").default;
 
-		server.use(render());
+		server.use(render({ clientStats }));
 		done();
 	});
 	//

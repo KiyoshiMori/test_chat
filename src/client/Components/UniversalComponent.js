@@ -3,9 +3,13 @@ import universal from 'react-universal-component';
 
 export default class extends Component {
 	render() {
-		const { is } = this.props;
+		const { is, onLoad } = this.props;
 
-		const UC = universal(props => is);
+		const componentName = is.id.toString().replace(/\//, '').replace(/\./g, '');
+
+		const UC = universal(() => is, {
+			onLoad: () => onLoad(`universal component: ${componentName}, is loaded!`),
+		});
 
 		return <UC is={is}/>
 	}

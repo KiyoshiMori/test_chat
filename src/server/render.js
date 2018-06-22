@@ -1,9 +1,19 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import App from '../client/Routes';
+import { Provider } from 'react-redux';
+import { flushChunkNames } from 'react-universal-component/server';
+import flushChunks from 'webpack-flush-chunks';
 
-export default () => (req, res) => {
+import App from '../client/Routes';
+import store from '../redux/store';
+
+export default ({ clientStats }) => (req, res) => {
+	const names = flushChunkNames();
+	const { js, style } = flushChunks(clientStats, {
+		chunkNames: names
+	});
+
 	const html = (`
 			<html>
 				<head>
@@ -12,13 +22,14 @@ export default () => (req, res) => {
 	            <body>
 	                <h1>testFromRender!</h1>
 	                <div id="root">${renderToString(
-	                	<StaticRouter location={req.url} context={{}}>
-	                	    <App/>
-		                </StaticRouter>
+	                	<Provider store={store}>
+		                    <StaticRouter location={req.url} context={{}}>
+		                        <App/>
+			                </StaticRouter>
+		                </Provider>
 					)}</div>
 	            </body>
-	            <script src="vendor-bundle.js"></script>
-	            <script src="main-bundle.js"></script>
+	            ${js}
 			</html>
 		`);
 

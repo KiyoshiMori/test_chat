@@ -8,5 +8,11 @@
     ],
     "babel-preset-react"
   ],
-  "plugins": ["react-hot-loader/babel", "syntax-dynamic-import", "universal-import"]
+  "plugins": [
+    "react-hot-loader/babel",
+    "syntax-dynamic-import",
+    "universal-import",
+    "transform-object-rest-spread",
+    "transform-decorators-legacy"
+  ]
 }
