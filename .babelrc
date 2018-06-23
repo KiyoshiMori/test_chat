@@ -13,6 +13,11 @@
     "syntax-dynamic-import",
     "universal-import",
     "transform-object-rest-spread",
-    "transform-decorators-legacy"
+    "transform-decorators-legacy",
+//    ["css-modules-transform", {
+//      "preprocessCss": "stylus-loader",
+//      "generateScopedName": "[local]-[hash]",
+//      "extensions": [".styl"]
+//    }]
   ]
 }

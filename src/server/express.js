@@ -51,7 +51,11 @@ if (isDev) {
 			})
 		);
 
-		const clientStats = stats.toJson().children[0]
+		const clientStats = stats.toJson().children[0];
+
+		console.log(stats.toString({
+			colors: true
+		}));
 
 		const render = require("../../build/prod-server-bundle.js").default;
 

@@ -1,12 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const externals = require('./externals');
+// use minicss-extract-loader here because of bug with ssr and use of style-loader with it is unavaliable
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     name: 'server',
 	mode: 'development',
 	target: 'node',
-	externals: nodeExternals(),
+	externals,
 	entry: './src/server/render.js',
     output: {
         filename: 'dev-server-bundle.js',
@@ -31,21 +34,25 @@ module.exports = {
 	            use: {
 		            loader: 'css-loader',
 		            options: {
-			            minimize: true
+			            minimize: true,
 		            }
 	            }
             },
-            {
-              test: /\.html$/,
-              use: [
-                  {
-                      loader: "file-loader",
-                      options: {
-                          name: "[name].html"
-                      }
-                  }
-              ]
-            },
+	        {
+	            test: /\.styl$/,
+		        use: [
+			        MiniCSSExtractPlugin.loader,
+			        {
+			        	loader: 'css-loader',
+				        options: {
+			        		modules: true,
+					        localIdentName: '[local]-[hash]'
+				        }
+			        },
+			        'postcss-loader',
+			        'stylus-loader'
+		        ]
+	        },
             {
                 test: /\.(jpg|gif|png)$/,
                 use: [
@@ -61,6 +68,7 @@ module.exports = {
         ]
     },
     plugins: [
+    	new MiniCSSExtractPlugin(),
 	    new webpack.optimize.LimitChunkCountPlugin({
 		    maxChunks: 1
 	    }),
@@ -69,5 +77,5 @@ module.exports = {
 			    NODE_ENV: JSON.stringify('development'),
 		    }
 	    }),
-    ]
+    ],
 };

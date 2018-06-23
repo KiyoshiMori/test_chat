@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
 	name: 'client',
@@ -23,7 +22,7 @@ module.exports = {
     devServer: {
         contentBase: 'dist',
         overlay: true,
-        // hot: true,
+        hot: true,
         stats: {
             colors: true,
         }
@@ -41,19 +40,23 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [MiniCSSExtractPlugin.loader, 'css-loader']
+                use: ['style-loader', 'css-loader']
             },
-            // {
-            //   test: /\.html$/,
-            //   use: [
-            //       {
-            //           loader: 'file-loader',
-            //           options: {
-            //               name: '[name].html'
-            //           }
-            //       }
-            //   ]
-            // },
+	        {
+		        test: /\.styl$/,
+		        use: [
+		        	'style-loader',
+			        {
+				        loader: 'css-loader',
+				        options: {
+				        	modules: true,
+					        localIdentName: '[local]-[hash]'
+				        }
+			        },
+			        'postcss-loader',
+			        'stylus-loader'
+		        ]
+	        },
             {
                 test: /\.(jpg|gif|png)$/,
                 use: [
@@ -68,7 +71,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new MiniCSSExtractPlugin(),
         new webpack.DefinePlugin({
             "process.env": {
                 NODE_ENV: JSON.stringify('development'),

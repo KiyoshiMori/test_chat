@@ -1,12 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
+const externals = require('./externals');
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     name: 'server',
 	mode: 'production',
 	target: 'node',
-	externals: nodeExternals(),
+	externals,
 	entry: './src/server/render.js',
     output: {
         filename: 'prod-server-bundle.js',
@@ -27,18 +28,25 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: "css-loader",
+	            options: {
+		            minimize: true,
+	            }
             },
-            {
-              test: /\.html$/,
-              use: [
-                  {
-                      loader: "file-loader",
-                      options: {
-                          name: "[name].html"
-                      }
-                  }
-              ]
-            },
+	        {
+		        test: /\.styl$/,
+		        use: [
+			        MiniCSSExtractPlugin.loader,
+			        {
+				        loader: 'css-loader',
+				        options: {
+					        modules: true,
+					        localIdentName: '[local]-[hash]'
+				        }
+			        },
+			        'postcss-loader',
+			        'stylus-loader'
+		        ]
+	        },
             {
                 test: /\.(jpg|gif|png)$/,
                 use: [
@@ -54,6 +62,7 @@ module.exports = {
         ]
     },
     plugins: [
+		new MiniCSSExtractPlugin(),
 	    new webpack.optimize.LimitChunkCountPlugin({
 		    maxChunks: 1
 	    }),

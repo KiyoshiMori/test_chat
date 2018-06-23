@@ -48,10 +48,25 @@ module.exports = {
               ],
               exclude: /node_modules/,
             },
-            {
-                test: /\.css$/,
-                use: [MiniCSSExtractPlugin.loader, 'css-loader']
-            },
+	        {
+		        test: /\.css$/,
+		        use: [MiniCSSExtractPlugin.loader, 'css-loader']
+	        },
+	        {
+		        test: /\.styl$/,
+		        use: [
+			        MiniCSSExtractPlugin.loader,
+			        {
+				        loader: 'css-loader',
+				        options: {
+					        modules: true,
+					        localIdentName: '[local]-[hash]'
+				        }
+			        },
+			        'postcss-loader',
+			        'stylus-loader'
+		        ]
+	        },
             {
               test: /\.html$/,
               use: [

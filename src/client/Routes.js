@@ -3,6 +3,8 @@ import { Route, Link, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { actionTest } from '../redux/reducers';
 // import universal from 'react-universal-component';
+// import './test.styl';
+import styles from './test.styl';
 
 import UniversalComponent from './Components/UniversalComponent';
 const MainPage = import('./Components/MainPage');
@@ -12,9 +14,10 @@ const MainPage = import('./Components/MainPage');
 export default class extends Component {
 	render() {
 		const { dispatch } = this.props;
+
 		return (
 			<div>
-				<div>
+				<div className={styles.Links}>
 					<Link to="/">Main page</Link>
 					<Link to="/test">Test page</Link>
 				</div>

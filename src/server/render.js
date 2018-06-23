@@ -9,15 +9,14 @@ import App from '../client/Routes';
 import store from '../redux/store';
 
 export default ({ clientStats }) => (req, res) => {
-	const names = flushChunkNames();
-	const { js, style } = flushChunks(clientStats, {
-		chunkNames: names
+	const { js, styles, cssHash } = flushChunks(clientStats, {
+		chunkNames: flushChunkNames()
 	});
 
 	const html = (`
 			<html>
 				<head>
-					<link href="/main.css" rel="stylesheet" />
+					${styles}
 				</head>
 	            <body>
 	                <h1>testFromRender!</h1>
@@ -30,6 +29,7 @@ export default ({ clientStats }) => (req, res) => {
 					)}</div>
 	            </body>
 	            ${js}
+	            ${cssHash}
 			</html>
 		`);
 
