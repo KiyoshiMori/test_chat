@@ -1,3 +1,4 @@
+import 'isomorphic-fetch';
 import express from 'express';
 import expressStaticGzip from "express-static-gzip";
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
