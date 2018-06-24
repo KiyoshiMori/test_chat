@@ -1,6 +1,7 @@
 import express from 'express';
-import path from 'path';
 import expressStaticGzip from "express-static-gzip";
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import bodyParser from 'body-parser';
 
 import React from 'react';
 
@@ -12,11 +13,11 @@ import configProdClient from '../../config/webpack.prod-client';
 import configDevServer from '../../config/webpack.dev-server';
 import configProdServer from '../../config/webpack.prod-server';
 
+import schema from '../lib/graphql/schema';
+
 const server = express();
 
 require('dotenv').config();
-
-console.log(process.env, process.env.NODE_ENV);
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
@@ -33,6 +34,9 @@ const done = () => {
 		console.log('server start:', 'localhost:', 8080);
 	});
 };
+
+server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 if (isDev) {
 	const compiler = webpack([configDevClient, configDevServer]);
