@@ -6,7 +6,7 @@ import { flushChunkNames } from 'react-universal-component/server';
 import flushChunks from 'webpack-flush-chunks';
 
 import App from '../client/Routes';
-import store from '../redux/store';
+import store from '../lib/redux/store';
 
 export default ({ clientStats }) => (req, res) => {
 	const { js, styles, cssHash } = flushChunks(clientStats, {

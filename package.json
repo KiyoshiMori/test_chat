@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "description": "my test chat",
   "scripts": {
-    "dev": "NODE_ENV=development BABEL_ENV=development nodemon --watch config --watch src/server --inspect src/server/main.js",
-    "prod": "NODE_ENV=productiont BABEL_ENV=production node src/server/main.js",
-    "test": "NODE_ENV=production BABEL_ENV=production webpack --config=config/webpack.prod-server.js"
+    "dev": "NODE_ENV=development nodemon --watch config --watch src/server --inspect src/server/main.js",
+    "prod": "NODE_ENV=productiont node src/server/main.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-beta.51",
+    "apollo-boost": "^0.1.10",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-static-gzip": "^0.3.2",
+    "graphql": "^0.13.2",
+    "graphql-tag": "^2.9.2",
     "postcss": "^6.0.23",
     "postcss-loader": "^2.1.5",
     "react": "^16.4.1",
+    "react-apollo": "^2.1.6",
     "react-dom": "^16.4.1",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",

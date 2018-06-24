@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { AppContainer } from 'react-hot-loader'
 
-import store from './redux/store';
+import store from './lib/redux/store';
 
 import App from './client/AppRoot';
 

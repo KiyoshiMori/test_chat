@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Link, Switch, withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
-import { actionTest } from '../redux/reducers';
+import { actionTest } from '../lib/redux/reducers';
 // import universal from 'react-universal-component';
 // import './test.styl';
 import styles from './test.styl';

@@ -14,7 +14,11 @@ import configProdServer from '../../config/webpack.prod-server';
 
 const server = express();
 
-const isProd = process.env.BABEL_ENV === 'production';
+require('dotenv').config();
+
+console.log(process.env, process.env.NODE_ENV);
+
+const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
 let isBuilt = false;
 
