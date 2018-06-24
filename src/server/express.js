@@ -60,14 +60,32 @@ pool.query('SELECT NOW()', (err, res) => {
 const client = new Client(connectionConfigure);
 client.connect();
 
-const query = 'INSERT INTO messages(identifier_message_number, message, "from") VALUES($1, $2, $3) RETURNING *';
-const values = ['135', 'test123test', 15];
+server.get('/messages', (err, res) => {
+	const selectQuery = 'SELECT * FROM messages';
 
-client.query(query, values, (err, res) => {
-	console.log('client', { err, res: res?.rows[0] });
-	client.end();
+	client.query(selectQuery)
+		.then(response => {
+			return res.json({ response: response?.rows });
+		})
+		.catch(e => {
+			return res.json({ error: e });
+		});
 });
-// //
+
+server.get('/messages/:messageId', (req, res) => {
+	const selectQuery = {
+		text: 'SELECT * FROM messages WHERE "from" = $1',
+		values: [req.params.messageId],
+	};
+
+	client.query(selectQuery)
+		.then(response => {
+			return res.json({ response: response?.rows });
+		})
+		.catch(e => {
+			return res.json({ error: e });
+		});
+});
 
 server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));

@@ -1,0 +1,13 @@
+type Message {
+    identifier_message_number: String
+    message: String
+    from: Int
+}
+
+input getMessagesInput {
+    user_id: Int
+}
+
+extend type Query {
+    getMessages(input: getMessagesInput): [Message]!
+}

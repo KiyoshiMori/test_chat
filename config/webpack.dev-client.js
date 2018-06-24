@@ -81,6 +81,6 @@ module.exports = {
                 WEBPACK: true,
             }
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
     ]
 };
