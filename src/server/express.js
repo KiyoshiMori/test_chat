@@ -1,13 +1,13 @@
 import 'isomorphic-fetch';
+import cors from 'cors';
 import express from 'express';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import expressPlayground from 'graphql-playground-middleware-express';
-import { Pool, Client } from 'pg';
+import { Client } from 'pg';
 import bodyParser from 'body-parser';
-import moment from 'moment';
 
 import React from 'react';
 
@@ -36,6 +36,7 @@ const done = () => {
 	console.log({ isBuilt });
 	if (isBuilt) return;
 
+	server.use(cors());
 	server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 	server.use('/graphiql', graphiqlExpress({
 		endpointURL: '/graphql',

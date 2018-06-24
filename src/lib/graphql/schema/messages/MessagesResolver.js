@@ -1,6 +1,5 @@
 import rp from 'request-promise';
 import { PubSub, withFilter } from 'graphql-subscriptions';
-import schema from '../schema';
 import moment from 'moment';
 
 const pubsub = new PubSub();
