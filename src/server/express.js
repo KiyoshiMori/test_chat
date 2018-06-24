@@ -2,6 +2,7 @@ import 'isomorphic-fetch';
 import express from 'express';
 import expressStaticGzip from "express-static-gzip";
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import { Pool, Client } from 'pg';
 import bodyParser from 'body-parser';
 
 import React from 'react';
@@ -17,6 +18,7 @@ import configProdServer from '../../config/webpack.prod-server';
 import schema from '../lib/graphql/schema';
 
 const server = express();
+const app = express();
 
 require('dotenv').config();
 
@@ -30,11 +32,42 @@ const done = () => {
 	console.log({ isBuilt });
 	if (isBuilt) return;
 
-	server.listen(8080, () => {
+	app.listen(8080, () => {
 		isBuilt = true;
-		console.log('server start:', 'localhost:', 8080);
+		console.log('app start:', 'localhost:', 8080);
+		server.listen(8081, () => {
+			console.log('server started!');
+		})
 	});
 };
+
+// TEMP TEST ZONE
+const connectionConfigure = {
+	user: process.env.DB_USER,
+	host: process.env.DB_HOST,
+	port: Number(process.env.DB_PORT),
+	database: process.env.DB_NAME,
+	password: process.env.DB_PASSWORD
+};
+
+const pool = new Pool(connectionConfigure);
+
+pool.query('SELECT NOW()', (err, res) => {
+	console.log('pool', { err, res });
+	pool.end();
+});
+
+const client = new Client(connectionConfigure);
+client.connect();
+
+const query = 'INSERT INTO messages(identifier_message_number, message, "from") VALUES($1, $2, $3) RETURNING *';
+const values = ['135', 'test123test', 15];
+
+client.query(query, values, (err, res) => {
+	console.log('client', { err, res: res?.rows[0] });
+	client.end();
+});
+// //
 
 server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
@@ -48,14 +81,14 @@ if (isDev) {
 	const webpackDevMW = require('webpack-dev-middleware');
 	const webpackHotMW = require('webpack-hot-middleware');
 
-	server.use(webpackDevMW(compiler, configDevClient.devServer));
-	server.use(webpackHotMW(clientCompiler, configDevClient.devServer));
-	server.use(webpackHotServerMiddleware(compiler));
+	app.use(webpackDevMW(compiler, configDevClient.devServer));
+	app.use(webpackHotMW(clientCompiler, configDevClient.devServer));
+	app.use(webpackHotServerMiddleware(compiler));
 	done();
 } else {
 	// ssr
 	webpack([configProdClient, configProdServer]).run((err, stats) => {
-		server.use(expressStaticGzip("dist", {
+		app.use(expressStaticGzip("dist", {
 				enableBrotli: true
 			})
 		);
@@ -68,7 +101,7 @@ if (isDev) {
 
 		const render = require("../../build/prod-server-bundle.js").default;
 
-		server.use(render({ clientStats }));
+		app.use(render({ clientStats }));
 		done();
 	});
 	//
