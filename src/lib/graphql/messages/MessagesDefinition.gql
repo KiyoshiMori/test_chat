@@ -1,3 +1,9 @@
+enum MutationType {
+   CREATED
+   UPDATED
+   DELETED
+ }
+
 type Message {
     text: String
     time: String
@@ -24,10 +30,26 @@ type Status {
     code: Int
 }
 
+type MessageSubscribe {
+    mutation: MutationType!
+    node: Message
+    updatedFields: [String]
+    previousValue: Message
+}
+
+input checkNewMessage {
+    receiver: Int
+    sender: Int
+}
+
 extend type Query {
     getMessages(input: getMessagesInput): [Message]!
 }
 
 extend type Mutation {
     sendMessage(input: sendMessageInput): Status!
+}
+
+extend type Subscription {
+    newMessage(input: checkNewMessage): Message
 }

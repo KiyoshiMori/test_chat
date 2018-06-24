@@ -6,7 +6,12 @@ type Mutation {
     _: Boolean
 }
 
+type Subscription {
+    _: Boolean
+}
+
 schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
 }

@@ -1,7 +1,10 @@
 import 'isomorphic-fetch';
 import express from 'express';
-import expressStaticGzip from "express-static-gzip";
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import expressPlayground from 'graphql-playground-middleware-express';
 import { Pool, Client } from 'pg';
 import bodyParser from 'body-parser';
 import moment from 'moment';
@@ -10,6 +13,7 @@ import React from 'react';
 
 import webpack from 'webpack';
 import webpackHotServerMiddleware from 'webpack-hot-server-middleware';
+import expressStaticGzip from "express-static-gzip";
 
 import configDevClient from '../../config/webpack.dev-client';
 import configProdClient from '../../config/webpack.prod-client';
@@ -20,6 +24,7 @@ import schema from '../lib/graphql/schema';
 
 const server = express();
 const app = express();
+const ws = createServer(server);
 
 require('dotenv').config();
 
@@ -27,19 +32,40 @@ const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
 let isBuilt = false;
 
-console.log({ isDev });
-
 const done = () => {
 	console.log({ isBuilt });
 	if (isBuilt) return;
 
+	server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+	server.use('/graphiql', graphiqlExpress({
+		endpointURL: '/graphql',
+		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
+	}));
+	server.use('/playground', expressPlayground ({
+		endpointURL: '/graphql',
+		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
+	}));
+
 	app.listen(8080, () => {
 		isBuilt = true;
 		console.log('app start:', 'localhost:', 8080);
-		server.listen(8081, () => {
-			console.log('server started!');
-		})
 	});
+
+	server.listen(8081, () => {
+		console.log('server started!');
+	});
+
+	ws.listen(7070, () => {
+		new SubscriptionServer({
+			execute,
+			subscribe,
+			schema,
+		}, {
+			server: ws,
+			path: '/subscriptions'
+		})
+	})
+
 };
 
 server.use(bodyParser.json());
@@ -83,7 +109,7 @@ server.post('/messages', (req, res) => {
 		text:
 			'INSERT INTO messages_info ' +
 			'(text, time, date, messageFrom, messageTo) VALUES($1, $2, $3, $4, $5)',
-		values: [req.body.text.toString(), moment().format('HH:mm:ss'), moment().format('YYYY-MM-DD'), req.body.from, req.body.to]
+		values: [req.body.text.toString(), req.body.time, req.body.date, req.body.from, req.body.to]
 	};
 
 	client.query(query)
@@ -94,9 +120,6 @@ server.post('/messages', (req, res) => {
 			return res.json({ response: { status: 'ERROR', code: 500 } });
 		});
 });
-
-server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
-server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 if (isDev) {
 	const compiler = webpack([configDevClient, configDevServer]);
