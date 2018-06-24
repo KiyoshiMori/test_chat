@@ -27,10 +27,14 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: "css-loader",
-	            options: {
-		            minimize: true,
-	            }
+                use: [
+                	{
+                		loader: 'css-loader',
+		                options: {
+			                minimize: true,
+		                }
+	                },
+                ],
             },
 	        {
 		        test: /\.styl$/,

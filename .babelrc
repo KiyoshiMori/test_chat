@@ -1,23 +1,19 @@
 {
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {
         "debug": true
       }
     ],
-    "babel-preset-react"
+    "@babel/preset-react",
+    ["@babel/preset-stage-0", {
+      "decoratorsLegacy": true
+    }]
   ],
   "plugins": [
+    "@babel/syntax-dynamic-import",
     "react-hot-loader/babel",
-    "syntax-dynamic-import",
-    "universal-import",
-    "transform-object-rest-spread",
-    "transform-decorators-legacy",
-//    ["css-modules-transform", {
-//      "preprocessCss": "stylus-loader",
-//      "generateScopedName": "[local]-[hash]",
-//      "extensions": [".styl"]
-//    }]
+    "universal-import"
   ]
 }
