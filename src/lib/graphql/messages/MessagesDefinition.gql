@@ -1,13 +1,33 @@
 type Message {
-    identifier_message_number: String
-    message: String
-    from: Int
+    text: String
+    time: String
+    date: String
+    is_readed: Boolean
+    messagefrom: Int
+    messageto: Int
+    messageid: Int
 }
 
 input getMessagesInput {
-    user_id: Int
+    sender: Int
+    receiver: Int
+}
+
+input sendMessageInput {
+    text: String
+    sender: Int
+    receiver: Int
+}
+
+type Status {
+    status: String
+    code: Int
 }
 
 extend type Query {
     getMessages(input: getMessagesInput): [Message]!
+}
+
+extend type Mutation {
+    sendMessage(input: sendMessageInput): Status!
 }

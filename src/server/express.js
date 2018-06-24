@@ -4,6 +4,7 @@ import expressStaticGzip from "express-static-gzip";
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { Pool, Client } from 'pg';
 import bodyParser from 'body-parser';
+import moment from 'moment';
 
 import React from 'react';
 
@@ -41,6 +42,8 @@ const done = () => {
 	});
 };
 
+server.use(bodyParser.json());
+
 // TEMP TEST ZONE
 const connectionConfigure = {
 	user: process.env.DB_USER,
@@ -50,18 +53,19 @@ const connectionConfigure = {
 	password: process.env.DB_PASSWORD
 };
 
-const pool = new Pool(connectionConfigure);
-
-pool.query('SELECT NOW()', (err, res) => {
-	console.log('pool', { err, res });
-	pool.end();
-});
-
 const client = new Client(connectionConfigure);
 client.connect();
 
-server.get('/messages', (err, res) => {
-	const selectQuery = 'SELECT * FROM messages';
+server.get('/messages', (req, res) => {
+	console.log(req.query);
+
+	const selectQuery = {
+		text:
+			'SELECT * FROM messages_info ' +
+			'WHERE (messageFrom = $1 AND messageTo=$2) OR (messageFrom = $2 AND messageTo = $1) ' +
+			'ORDER BY date, time ASC',
+		values: [req.query.from, req.query.to],
+	};
 
 	client.query(selectQuery)
 		.then(response => {
@@ -72,18 +76,22 @@ server.get('/messages', (err, res) => {
 		});
 });
 
-server.get('/messages/:messageId', (req, res) => {
-	const selectQuery = {
-		text: 'SELECT * FROM messages WHERE "from" = $1',
-		values: [req.params.messageId],
+server.post('/messages', (req, res) => {
+	console.log({ req: req.body });
+
+	const query = {
+		text:
+			'INSERT INTO messages_info ' +
+			'(text, time, date, messageFrom, messageTo) VALUES($1, $2, $3, $4, $5)',
+		values: [req.body.text.toString(), moment().format('HH:mm:ss'), moment().format('YYYY-MM-DD'), req.body.from, req.body.to]
 	};
 
-	client.query(selectQuery)
+	client.query(query)
 		.then(response => {
-			return res.json({ response: response?.rows });
+			return res.json({ response: { status: 'SUCCESS', code: 200 } });
 		})
 		.catch(e => {
-			return res.json({ error: e });
+			return res.json({ response: { status: 'ERROR', code: 500 } });
 		});
 });
 
