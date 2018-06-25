@@ -7,8 +7,8 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import expressPlayground from 'graphql-playground-middleware-express';
-import { PostgresPubSub } from 'graphql-postgres-subscriptions';
 import bodyParser from 'body-parser';
+import apiRoutes from './apiRoutes';
 
 import React from 'react';
 
@@ -32,15 +32,10 @@ const isDev = !isProd;
 let isBuilt = false;
 
 const done = () => {
-	console.log({ isBuilt });
 	if (isBuilt) return;
 
 	server.use(cors());
 	server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
-	server.use('/graphiql', graphiqlExpress({
-		endpointURL: '/graphql',
-		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
-	}));
 	server.use('/playground', expressPlayground ({
 		endpointURL: '/graphql',
 		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
@@ -69,67 +64,7 @@ const done = () => {
 
 server.use(bodyParser.json());
 
-// TEMP TEST ZONE
-export const pubsub = new PostgresPubSub({
-	user: process.env.DB_USER,
-	host: process.env.DB_HOST,
-	port: Number(process.env.DB_PORT),
-	database: process.env.DB_NAME,
-	password: process.env.DB_PASSWORD
-});
-
-const database = require('./db');
-
-server.get('/messages', async (req, res) => {
-	const { from, to } = req.query;
-
-	try {
-		const response = await database('messages_info')
-			.where({
-				messagefrom: +from,
-				messageto: +to
-			})
-			.orWhere({
-				messagefrom: +to,
-				messageto: +from
-			})
-			.orderByRaw('date, time ASC')
-			.select();
-
-		console.log({ response });
-
-		return res.json({response});
-	} catch (e) {
-		console.log({ ERROR: e });
-
-		res.json({ error: e });
-	}
-});
-
-server.post('/messages', (req, res) => {
-	const { text, time, date, from, to } = req.body;
-
-	database('messages_info')
-		.insert({
-			text,
-			time,
-			date,
-			messagefrom: from,
-			messageto: to
-		})
-		.then(() => {
-			pubsub.publish('newMessage', {
-				text,
-				time,
-				date,
-				messagefrom: from,
-				messageto: to
-			});
-
-			return res.json({ response: { status: 'SUCCESS' } });
-		})
-		.catch(e => res.json({ error: e }));
-});
+apiRoutes(server);
 
 if (isDev) {
 	const compiler = webpack([configDevClient, configDevServer]);

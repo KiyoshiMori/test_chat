@@ -2,7 +2,7 @@ import rp from 'request-promise';
 import { withFilter } from 'graphql-subscriptions';
 import moment from 'moment';
 
-import { pubsub } from "../../../../server/express";
+import { pubsub } from "../../../../server/apiRoutes";
 
 export default {
 	Query: {
