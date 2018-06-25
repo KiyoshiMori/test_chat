@@ -1,3 +1,4 @@
+require('dotenv').config();
 import 'isomorphic-fetch';
 import cors from 'cors';
 import express from 'express';
@@ -6,7 +7,7 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import expressPlayground from 'graphql-playground-middleware-express';
-import { Client } from 'pg';
+import { PostgresPubSub } from 'graphql-postgres-subscriptions';
 import bodyParser from 'body-parser';
 
 import React from 'react';
@@ -25,8 +26,6 @@ import schema from '../lib/graphql/schema';
 const server = express();
 const app = express();
 const ws = createServer(server);
-
-require('dotenv').config();
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
@@ -66,60 +65,70 @@ const done = () => {
 			path: '/subscriptions'
 		})
 	})
-
 };
 
 server.use(bodyParser.json());
 
 // TEMP TEST ZONE
-const connectionConfigure = {
+export const pubsub = new PostgresPubSub({
 	user: process.env.DB_USER,
 	host: process.env.DB_HOST,
 	port: Number(process.env.DB_PORT),
 	database: process.env.DB_NAME,
 	password: process.env.DB_PASSWORD
-};
+});
 
-const client = new Client(connectionConfigure);
-client.connect();
+const database = require('./db');
 
-server.get('/messages', (req, res) => {
-	console.log(req.query);
+server.get('/messages', async (req, res) => {
+	const { from, to } = req.query;
 
-	const selectQuery = {
-		text:
-			'SELECT * FROM messages_info ' +
-			'WHERE (messageFrom = $1 AND messageTo=$2) OR (messageFrom = $2 AND messageTo = $1) ' +
-			'ORDER BY date, time ASC',
-		values: [req.query.from, req.query.to],
-	};
+	try {
+		const response = await database('messages_info')
+			.where({
+				messagefrom: +from,
+				messageto: +to
+			})
+			.orWhere({
+				messagefrom: +to,
+				messageto: +from
+			})
+			.orderByRaw('date, time ASC')
+			.select();
 
-	client.query(selectQuery)
-		.then(response => {
-			return res.json({ response: response?.rows });
-		})
-		.catch(e => {
-			return res.json({ error: e });
-		});
+		console.log({ response });
+
+		return res.json({response});
+	} catch (e) {
+		console.log({ ERROR: e });
+
+		res.json({ error: e });
+	}
 });
 
 server.post('/messages', (req, res) => {
-	console.log({ req: req.body });
+	const { text, time, date, from, to } = req.body;
 
-	const query = {
-		text:
-			'INSERT INTO messages_info ' +
-			'(text, time, date, messageFrom, messageTo) VALUES($1, $2, $3, $4, $5)',
-		values: [req.body.text.toString(), req.body.time, req.body.date, req.body.from, req.body.to]
-	};
-
-	client.query(query)
-		.then(response => {
-			return res.json({ response: { status: 'SUCCESS', code: 200 } });
+	database('messages_info')
+		.insert({
+			text,
+			time,
+			date,
+			messagefrom: from,
+			messageto: to
 		})
-		.catch(e => {
-			return res.json({ response: { status: 'ERROR', code: 500 } });
-		});
+		.then(() => {
+			pubsub.publish('newMessage', {
+				text,
+				time,
+				date,
+				messagefrom: from,
+				messageto: to
+			});
+
+			return res.json({ response: { status: 'SUCCESS' } });
+		})
+		.catch(e => res.json({ error: e }));
 });
 
 if (isDev) {

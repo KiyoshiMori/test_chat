@@ -1,8 +1,8 @@
 import rp from 'request-promise';
-import { PubSub, withFilter } from 'graphql-subscriptions';
+import { withFilter } from 'graphql-subscriptions';
 import moment from 'moment';
 
-const pubsub = new PubSub();
+import { pubsub } from "../../../../server/express";
 
 export default {
 	Query: {
@@ -37,8 +37,6 @@ export default {
 				},
 				json: true,
 			});
-
-			pubsub.publish('newMessage', body);
 
 			return res.response;
 		}

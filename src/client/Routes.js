@@ -69,7 +69,7 @@ export default class extends Component {
 		const { dispatch, getMessages: { getMessages } } = this.props;
 		const { inputText } = this.state;
 
-		console.log(this.props, 'props at roout');
+		// console.log(this.props, 'props at roout');
 
 		return (
 			<div>
