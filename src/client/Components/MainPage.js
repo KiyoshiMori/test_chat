@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import { graphql, withApollo } from 'react-apollo';
 import _ from 'lodash';
-import { getMessages, newMessageSibscription, sendMessage } from '../../lib/graphql/queries/messages';
+import { getMessages, newMessageSibscription, sendMessage, isTyping, isTypingSubscription } from '../../lib/graphql/queries/messages';
 
 @withApollo
 @graphql(getMessages, {
@@ -13,7 +13,8 @@ import { getMessages, newMessageSibscription, sendMessage } from '../../lib/grap
 export default class extends Component {
 	state = {
 		inputText1: '',
-		inputText2: ''
+		inputText2: '',
+		isTyping: false,
 	};
 
 	async componentDidMount() {
@@ -24,9 +25,11 @@ export default class extends Component {
 				document: newMessageSibscription,
 				variables: { receiver, sender },
 				updateQuery: (prev, { subscriptionData }) => {
-					const newMessage = subscriptionData.data.newMessage;
+					const { newMessage } = subscriptionData?.data;
 
 					if (!newMessage) return;
+
+					console.log({ newMessage });
 
 					const messages = _.concat(prev.getMessages, [newMessage]);
 
@@ -35,12 +38,21 @@ export default class extends Component {
 					}
 				}
 			});
+
+		getMessages
+			.subscribeToMore({
+				document: isTypingSubscription,
+				variables: { from: 21, to: 13 },
+				updateQuery: (prev, { subscriptionData }) => {
+					const { isTypingSubscription: { isTyping } } = subscriptionData?.data;
+
+					this.setState({ isTyping  });
+				}
+			});
 	}
 
 	postMessage = ({ sender, receiver, name }) => {
 		const { client } = this.props;
-
-		console.log(this.state[name], this.state, name);
 
 		client.mutate({
 			mutation: sendMessage,
@@ -52,12 +64,28 @@ export default class extends Component {
 
 	inputMessage = e => {
 		const { value, name } = e.target;
+		this.isTypingFunc(true);
 
 		this.setState({ [name]: value });
 	};
 
+	isTypingFunc = isTypingBool => {
+		const { client, sender, receiver } = this.props;
+
+		if ((this.state.isTyping === true) && (isTypingBool === true)) return;
+
+		return client.mutate({
+			mutation: isTyping,
+			variables: { sender, receiver, isTyping: isTypingBool },
+		});
+	};
+
+	onBlur = () => {
+		this.isTypingFunc(false);
+	};
+
 	render() {
-		const { inputText1, inputText2 } = this.state;
+		const { inputText1, inputText2, isTyping } = this.state;
 		const { getMessages: { getMessages }, sender, receiver } = this.props;
 
 		const messages = getMessages?.slice().reverse();
@@ -70,8 +98,8 @@ export default class extends Component {
 						name="inputText1"
 						value={inputText1}
 						onChange={e => this.inputMessage(e)}
+						onBlur={this.onBlur}
 						onKeyPress={e => {
-							console.log(e, e.key);
 							e.key === 'Enter' && this.postMessage({ sender, receiver, name: 'inputText1' })
 						}}
 					/>
@@ -98,6 +126,7 @@ export default class extends Component {
 						Send!
 					</button>
 				</div>
+				{isTyping && <h2>user1 is typing...</h2>}
 				<div style={{ display: 'flex', flexDirection: 'column'}}>
 				{messages?.map(el => {
 					return (

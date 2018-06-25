@@ -42,14 +42,32 @@ input checkNewMessage {
     sender: Int
 }
 
+input isTypingInput {
+    isTyping: Boolean
+    receiver: Int
+    sender: Int
+}
+
+type isTypingSubscriptionResponse {
+    isTyping: Boolean
+    receiver: Int
+    sender: Int
+}
+input isTypingSubscriptionInput {
+    from: Int
+    to: Int
+}
+
 extend type Query {
     getMessages(input: getMessagesInput): [Message]!
 }
 
 extend type Mutation {
     sendMessage(input: sendMessageInput): Status!
+    isTyping(input: isTypingInput): isTypingSubscriptionResponse
 }
 
 extend type Subscription {
     newMessage(input: checkNewMessage): Message
+    isTypingSubscription(input: isTypingSubscriptionInput): isTypingSubscriptionResponse
 }

@@ -34,3 +34,21 @@ export const sendMessage = gql`
 		}
 	}
 `;
+
+export const isTyping = gql`
+	mutation($isTyping: Boolean, $receiver: Int, $sender: Int) {
+		isTyping(input: {isTyping: $isTyping, receiver: $receiver, sender: $sender}) {
+			isTyping
+		}
+	}
+`;
+
+export const isTypingSubscription = gql`
+	subscription($from: Int, $to: Int) {
+		isTypingSubscription(input: {from: $from, to: $to}) {
+			isTyping
+			receiver
+			sender
+		}
+	}
+`;

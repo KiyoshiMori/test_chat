@@ -11,3 +11,4 @@ export default makeExecutableSchema({
 	typeDefs: [RootDefinition, MessagesDefinition],
 	resolvers: _.merge({}, RootResolver, MessagesResolver),
 });
+//test22

@@ -35,6 +35,12 @@ export default {
 			console.log({ res });
 
 			return res.response;
+		},
+		async isTyping(_, { input }) {
+			const { isTyping } = input;
+
+			pubsub.publish('isTyping', input);
+			return { isTyping };
 		}
 	},
 	Subscription: {
@@ -43,6 +49,13 @@ export default {
 			subscribe: withFilter(() => pubsub.asyncIterator('newMessage'), (payload, variables) => {
 				const { receiver, sender } = variables?.input;
 				return [receiver, sender].indexOf(payload.messagefrom) !== -1;
+			})
+		},
+		isTypingSubscription: {
+			resolve: payload => payload,
+			subscribe: withFilter(() => pubsub.asyncIterator('isTyping'), (payload, variables) => {
+				const { from, to } = variables?.input;
+				return (payload.sender === from) && (payload.receiver === to);
 			})
 		}
 	}
