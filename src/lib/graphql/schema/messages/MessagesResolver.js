@@ -19,24 +19,20 @@ export default {
 		async sendMessage(_, { input }) {
 			const { text, sender, receiver } = input;
 
-			const body = {
-				text,
-				messagefrom: sender,
-				messageto: receiver,
-				time: moment().format('HH:mm:ss'),
-				date: moment().format('YYYY-MM-DD'),
-			};
-
 			const res = await rp({
 				method: 'post',
 				uri: 'http://localhost:8081/messages',
 				body: {
-					...body,
+					text,
 					from: sender,
-					to: receiver
+					to: receiver,
+					time: moment().format('HH:mm:ss'),
+					date: moment().format('YYYY-MM-DD'),
 				},
 				json: true,
 			});
+
+			console.log({ res });
 
 			return res.response;
 		}

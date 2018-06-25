@@ -9,7 +9,7 @@ export default class extends Component {
 	render() {
 		return (
 			<Router>
-				<Routes receiver={10} sender={18} />
+				<Routes />
 			</Router>
 		);
 	}

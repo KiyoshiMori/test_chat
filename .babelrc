@@ -6,16 +6,17 @@
         "debug": true
       }
     ],
-    "@babel/preset-react",
     ["@babel/preset-stage-0", {
       "decoratorsLegacy": true,
       "useBuiltIns": true
-    }]
+    }],
+    "@babel/preset-react"
   ],
   "plugins": [
     "@babel/syntax-dynamic-import",
     "react-hot-loader/babel",
     "universal-import",
-    "import-graphql"
+    "import-graphql",
+    "@babel/plugin-transform-spread"
   ]
 }

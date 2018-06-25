@@ -28,13 +28,13 @@ export default (server) => {
 				.orderByRaw('date, time ASC')
 				.select();
 
-			console.log({response});
+			console.log({ response });
 
-			return res.json({response});
+			return res.json({ response });
 		} catch (e) {
-			console.log({ERROR: e});
+			console.log({ ERROR: e });
 
-			return res.json({error: e});
+			return res.json({ error: e });
 		}
 	});
 
@@ -58,8 +58,8 @@ export default (server) => {
 					messageto: to
 				});
 
-				return res.json({response: {status: 'SUCCESS'}});
+				return res.json({ response: { status: 'SUCCESS' } });
 			})
-			.catch(e => res.json({error: e}));
+			.catch(e => res.json({ error: e }));
 	});
 }
