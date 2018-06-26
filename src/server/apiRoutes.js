@@ -1,18 +1,10 @@
-import { PostgresPubSub } from "graphql-postgres-subscriptions";
-
-export const pubsub = new PostgresPubSub({
-	user: process.env.DB_USER,
-	host: process.env.DB_HOST,
-	port: Number(process.env.DB_PORT),
-	database: process.env.DB_NAME,
-	password: process.env.DB_PASSWORD
-});
-
 const database = require('./db');
 
-export default (server) => {
+export default (server, pubsub) => {
 	server.get('/messages', async (req, res) => {
 		const { from, to } = req.query;
+
+		console.log({ from, to });
 
 		try {
 			const response = await database('messages_info')
@@ -27,7 +19,7 @@ export default (server) => {
 				.orderByRaw('date, time ASC')
 				.select();
 
-			console.log({ response });
+			// console.log({ response });
 
 			return res.json({ response });
 		} catch (e) {

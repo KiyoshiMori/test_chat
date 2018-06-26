@@ -6,6 +6,7 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import expressPlayground from 'graphql-playground-middleware-express';
+import { PostgresPubSub } from 'graphql-postgres-subscriptions';
 import bodyParser from 'body-parser';
 import apiRoutes from './apiRoutes';
 
@@ -30,11 +31,26 @@ const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
 let isBuilt = false;
 
+const pubsub = new PostgresPubSub({
+	user: process.env.DB_USER,
+	host: process.env.DB_HOST,
+	port: Number(process.env.DB_PORT),
+	database: process.env.DB_NAME,
+	password: process.env.DB_PASSWORD
+});
+
+export const test = text => console.log({ text });
+
 const done = () => {
 	if (isBuilt) return;
 
+	let context = { sender: 0 };
+
 	server.use(cors());
-	server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+	server.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
+		schema,
+		context: { req, pubsub }
+	})));
 	server.use('/playground', expressPlayground ({
 		endpointURL: '/graphql',
 		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
@@ -54,6 +70,7 @@ const done = () => {
 			execute,
 			subscribe,
 			schema,
+			rootValue: { pubsub }
 		}, {
 			server: ws,
 			path: '/subscriptions'
@@ -63,7 +80,7 @@ const done = () => {
 
 server.use(bodyParser.json());
 
-apiRoutes(server);
+apiRoutes(server, pubsub);
 
 if (isDev) {
 	const compiler = webpack([configDevClient, configDevServer]);

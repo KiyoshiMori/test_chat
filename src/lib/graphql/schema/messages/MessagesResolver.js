@@ -2,11 +2,9 @@ import rp from 'request-promise';
 import { withFilter } from 'graphql-subscriptions';
 import moment from 'moment';
 
-import { pubsub } from "../../../../server/apiRoutes";
-
 export default {
 	Query: {
-		async getMessages(_, { input }) {
+		async getMessages(_, { input }, context) {
 			const res = await rp({
 				uri: `http://localhost:8081/messages?from=${input.sender}&to=${input.receiver}`,
 				json: true
@@ -36,7 +34,7 @@ export default {
 
 			return res.response;
 		},
-		async isTyping(_, { input }) {
+		async isTyping(_, { input }, { pubsub }) {
 			const { isTyping } = input;
 
 			pubsub.publish('isTyping', input);
@@ -46,14 +44,14 @@ export default {
 	Subscription: {
 		newMessage: {
 			resolve: payload => payload,
-			subscribe: withFilter(() => pubsub.asyncIterator('newMessage'), (payload, variables) => {
+			subscribe: withFilter(({ pubsub }) => pubsub.asyncIterator('newMessage'), (payload, variables) => {
 				const { receiver, sender } = variables?.input;
 				return [receiver, sender].indexOf(payload.messagefrom) !== -1;
 			})
 		},
 		isTypingSubscription: {
 			resolve: payload => payload,
-			subscribe: withFilter(() => pubsub.asyncIterator('isTyping'), (payload, variables) => {
+			subscribe: withFilter(({ pubsub }) => pubsub.asyncIterator('isTyping'), (payload, variables) => {
 				const { from, to } = variables?.input;
 				return (payload.sender === from) && (payload.receiver === to);
 			})
