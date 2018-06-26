@@ -15,6 +15,8 @@ export default ({ clientStats }) => (req, res) => {
 		chunkNames: flushChunkNames()
 	});
 
+	console.log(process.env);
+
 	const html = (`
 			<html>
 				<head>

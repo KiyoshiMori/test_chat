@@ -9,7 +9,9 @@ import {SubscriptionClient } from 'subscriptions-transport-ws'
 let link = null;
 
 if (process.browser) {
-	const wsClient = new SubscriptionClient(`ws://localhost:7070/subscriptions`, {
+	console.log({ env: process.env });
+
+	const wsClient = new SubscriptionClient(`ws://${process.env.HOST}:${process.env.PORT_WS}/subscriptions`, {
 		reconnect: true,
 	});
 
@@ -21,15 +23,15 @@ if (process.browser) {
 			return kind === 'OperationDefinition' && operation === 'subscription'
 		},
 		new WebSocketLink({
-			uri: 'ws://localhost:7070/subscriptions',
+			uri: `ws://${process.env.HOST}:${process.env.PORT_WS}/subscriptions`,
 			options: {
 				reconnect: true,
 			}
 		}),
-		new createHttpLink({ uri: 'http://localhost:8081/graphql' }),
+		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql` }),
 	);
 } else {
-	link = new createHttpLink({ uri: 'http://localhost:8081/graphql' });
+	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql` });
 }
 
 console.log({ browser: process.browser });

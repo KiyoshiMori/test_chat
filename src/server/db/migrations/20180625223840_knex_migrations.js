@@ -1,7 +1,7 @@
 exports.up = function(knex, Promise) {
 	knex.schema.hasTable(process.env.DB_NAME).then(exists => {
 		if (!exists) {
-			return knex.schema.createTable(process.env.DB_NAME, t => {
+			return knex.schema.createTable('messages_info', t => {
 				t.increments("messageid").primary();
 				t.integer("messageto").notNull();
 				t.integer("messagefrom").notNull();
@@ -15,5 +15,5 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-	return knex.schema.dropTableIfExists(process.env.DB_NAME);
+	return knex.schema.dropTableIfExists('messages_info');
 };

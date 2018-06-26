@@ -1,4 +1,3 @@
-require('dotenv').config();
 import { PostgresPubSub } from "graphql-postgres-subscriptions";
 
 export const pubsub = new PostgresPubSub({

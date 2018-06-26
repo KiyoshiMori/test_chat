@@ -1,4 +1,3 @@
-require('dotenv').config();
 import 'isomorphic-fetch';
 import cors from 'cors';
 import express from 'express';
@@ -41,16 +40,16 @@ const done = () => {
 		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
 	}));
 
-	app.listen(8080, () => {
+	app.listen(process.env.PORT_APP, () => {
 		isBuilt = true;
 		console.log('app start:', 'localhost:', 8080);
 	});
 
-	server.listen(8081, () => {
+	server.listen(process.env.PORT_SERVER, () => {
 		console.log('server started!');
 	});
 
-	ws.listen(7070, () => {
+	ws.listen(process.env.PORT_WS, () => {
 		new SubscriptionServer({
 			execute,
 			subscribe,
