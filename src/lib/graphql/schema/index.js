@@ -7,8 +7,11 @@ import RootResolver from './RootResolver';
 import MessagesDefinition from './messages/MessagesDefinition.gql';
 import MessagesResolver from './messages/MessagesResolver';
 
+import UserDefinition from './user/UserDefinition.gql';
+import UserResolver from './user/UserResolver';
+
 export default makeExecutableSchema({
-	typeDefs: [RootDefinition, MessagesDefinition],
-	resolvers: _.merge({}, RootResolver, MessagesResolver),
+	typeDefs: [RootDefinition, MessagesDefinition, UserDefinition],
+	resolvers: _.merge({}, RootResolver, MessagesResolver, UserResolver),
 });
-//tessadsda
+//comment for update gql file12

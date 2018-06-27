@@ -22,9 +22,9 @@ import configDevServer from '../../config/webpack.dev-server';
 import configProdServer from '../../config/webpack.prod-server';
 
 import schema from '../lib/graphql/schema';
+import db from './db';
 
 const server = express();
-const app = express();
 const ws = createServer(server);
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -39,27 +39,10 @@ const pubsub = new PostgresPubSub({
 	password: process.env.DB_PASSWORD
 });
 
-export const test = text => console.log({ text });
+server.use(bodyParser.json());
 
 const done = () => {
 	if (isBuilt) return;
-
-	let context = { sender: 0 };
-
-	server.use(cors());
-	server.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
-		schema,
-		context: { req, pubsub }
-	})));
-	server.use('/playground', expressPlayground ({
-		endpointURL: '/graphql',
-		subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
-	}));
-
-	app.listen(process.env.PORT_APP, () => {
-		isBuilt = true;
-		console.log('app start:', 'localhost:', 8080);
-	});
 
 	server.listen(process.env.PORT_SERVER, () => {
 		console.log('server started!');
@@ -78,9 +61,63 @@ const done = () => {
 	})
 };
 
-server.use(bodyParser.json());
-
 apiRoutes(server, pubsub);
+
+const passport = require('passport');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
+
+const store = new KnexSessionStore({
+	knex: db,
+	tablename: 'sessions',
+});
+
+server.use(require('cookie-parser')());
+server.use(session({ secret: 'cat', store, saveUninitialized: true, resave: true }));
+server.use(passport.initialize());
+server.use(passport.session());
+
+server.get('/', (req, res, next) => {
+	console.log('USER:', req.user);
+	res.locals.user = req.user;
+	next();
+});
+
+server.use('/login', (req, res, next) => {
+	req.login({ id: 13 }, (err) => {
+		console.log('user at login page', req.user);
+		return res.redirect('/');
+	});
+});
+
+passport.serializeUser((user, done) => {
+	done(null, user)
+});
+
+passport.deserializeUser((user, done) => {
+	done(null, user);
+});
+
+server.use('*', cors({ origin: 'http://localhost:8081', credentials: true }));
+server.use('/graphql',
+	(req, res, next) => {
+		console.log('GRAPHQL USER', req.user, res.locals.user);
+
+		if (!req.user) {
+			// res.json('You are not authorized!')
+		}
+
+		next();
+	},
+	graphqlExpress(req => ({
+		schema,
+		context: { user: req.user, pubsub }
+	}))
+);
+server.use('/playground', expressPlayground ({
+	endpointURL: '/graphql',
+	subscriptionsEndpoint: 'ws://localhost:7070/subscriptions'
+}));
 
 if (isDev) {
 	const compiler = webpack([configDevClient, configDevServer]);
@@ -91,14 +128,14 @@ if (isDev) {
 	const webpackDevMW = require('webpack-dev-middleware');
 	const webpackHotMW = require('webpack-hot-middleware');
 
-	app.use(webpackDevMW(compiler, configDevClient.devServer));
-	app.use(webpackHotMW(clientCompiler, configDevClient.devServer));
-	app.use(webpackHotServerMiddleware(compiler));
+	server.use(webpackDevMW(compiler, configDevClient.devServer));
+	server.use(webpackHotMW(clientCompiler, configDevClient.devServer));
+	server.use(webpackHotServerMiddleware(compiler));
 	done();
 } else {
 	// ssr
 	webpack([configProdClient, configProdServer]).run((err, stats) => {
-		app.use(expressStaticGzip("dist", {
+		server.use(expressStaticGzip("dist", {
 				enableBrotli: true
 			})
 		);
@@ -111,7 +148,7 @@ if (isDev) {
 
 		const render = require("../../build/prod-server-bundle.js").default;
 
-		app.use(render({ clientStats }));
+		server.use(render({ clientStats }));
 		done();
 	});
 	//

@@ -1,0 +1,8 @@
+type getMyInfoResponse {
+    id: Int
+    authorized: Boolean
+}
+
+extend type Query {
+    getMyInfo: getMyInfoResponse!
+}

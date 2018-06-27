@@ -4,9 +4,9 @@ import moment from 'moment';
 
 export default {
 	Query: {
-		async getMessages(_, { input }, context) {
+		async getMessages(_, { input }, { user }) {
 			const res = await rp({
-				uri: `http://localhost:8081/messages?from=${input.sender}&to=${input.receiver}`,
+				uri: `http://localhost:8081/messages?from=${user.id}&to=${input.receiver}`,
 				json: true
 			});
 

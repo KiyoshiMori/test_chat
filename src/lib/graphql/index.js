@@ -28,10 +28,10 @@ if (process.browser) {
 				reconnect: true,
 			}
 		}),
-		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql` }),
+		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql`, credentials: 'include' }),
 	);
 } else {
-	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql` });
+	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql`, credentials: 'include' });
 }
 
 console.log({ browser: process.browser });

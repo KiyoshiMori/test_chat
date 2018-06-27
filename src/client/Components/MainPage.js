@@ -2,8 +2,22 @@ import React, {Component, Fragment} from 'react';
 import { graphql, withApollo } from 'react-apollo';
 import _ from 'lodash';
 import { getMessages, newMessageSibscription, sendMessage, isTyping, isTypingSubscription } from '../../lib/graphql/queries/messages';
+import { getMyInfo } from '../../lib/graphql/queries/user';
 
 @withApollo
+@graphql(getMyInfo, {
+	props: ({ data }) => {
+		if (data.loading === true) {
+			return { loading: data.loading }
+		} else {
+			const {authorized, ...info} = data?.getMyInfo;
+			return {
+				myInfo: {...info},
+				authorized
+			}
+		}
+	}
+})
 @graphql(getMessages, {
 	options: ownProps => ({
 		variables: { receiver: ownProps.receiver, sender: ownProps.sender },
@@ -90,6 +104,7 @@ export default class extends Component {
 
 		const messages = getMessages?.slice().reverse();
 
+		console.log('props', this.props);
 		return (
 			<Fragment>
 				<div style={{ float: 'left' }}>

@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export const newMessageSibscription = gql`
 	subscription($receiver: Int, $sender: Int) {
 		newMessage(input: {receiver: $receiver, sender: $sender}) {
+			messageid
 			text
 			time
 			date
@@ -16,6 +17,7 @@ export const newMessageSibscription = gql`
 export const getMessages = gql`
 	query($receiver: Int, $sender: Int) {
 		getMessages(input: {receiver: $receiver, sender: $sender}) {
+			messageid
 			text
 			time
 			date
