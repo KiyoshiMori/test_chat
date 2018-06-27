@@ -7,6 +7,7 @@ import { getMainDefinition } from 'apollo-utilities'
 import {SubscriptionClient } from 'subscriptions-transport-ws'
 
 let link = null;
+let preloadedState = null;
 
 if (process.browser) {
 	console.log({ env: process.env });
@@ -30,6 +31,10 @@ if (process.browser) {
 		}),
 		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql`, credentials: 'include' }),
 	);
+
+	preloadedState = window.__APOLLO_STATE__;
+
+	delete window.__APOLLO_STATE__;
 } else {
 	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql`, credentials: 'include' });
 }
@@ -40,6 +45,7 @@ const client = new ApolloClient({
 	link,
 	cache: new InMemoryCache(),
 	ssrMode: !process.browser,
+	initialState: preloadedState,
 });
 
 export { client };

@@ -49,6 +49,7 @@ require('./apiRoutes').default(server, pubsub);
 require('./auth').default(server);
 require('./graphql').default(server, schema, pubsub);
 
+console.log({ isDev });
 if (isDev) {
 	require('./webpackCompile').webpackHotLoader(server);
 	done();

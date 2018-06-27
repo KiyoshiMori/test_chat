@@ -4,7 +4,7 @@
   "description": "my test chat",
   "scripts": {
     "dev": "NODE_ENV=development nodemon --watch config --watch src/server --inspect src/server/main.js",
-    "prod": "NODE_ENV=productiont node src/server/main.js",
+    "prod": "NODE_ENV=production node src/server/main.js",
     "test:createDB": "NODE_ENV=development run.env createdb testDB",
     "test:migrateDB": "NODE_ENV=development run.env knex migrate:latest --knexfile src/server/db/knexfile.js",
     "test:migrateRollback": "NODE_ENV=development run.env knex migrate:rollback --knexfile src/server/db/knexfile.js",

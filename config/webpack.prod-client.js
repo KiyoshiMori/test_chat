@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BrotilPlugin = require('brotli-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     name: 'client',
@@ -96,6 +97,7 @@ module.exports = {
 	    new CompressionPlugin({
 		    algorithm: 'gzip'
 	    }),
-	    new BrotilPlugin()
+	    new BrotilPlugin(),
+	    new Dotenv(),
     ]
 };

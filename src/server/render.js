@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToString, renderToStaticMarkup } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { ApolloProvider, getDataFromTree } from 'react-apollo';
 import { Provider } from 'react-redux';
@@ -18,6 +18,8 @@ export default ({ clientStats }) => (req, res) => {
 	console.log(process.env);
 
 	getDataFromTree(App).then(() => {
+		const initialState = client.extract();
+
 		const html = (`
 			<html>
 				<head>
@@ -35,6 +37,9 @@ export default ({ clientStats }) => (req, res) => {
 						</ApolloProvider>
 					)}</div>
 	            </body>
+	            <script dangerouslySetInnerHTML={{
+          			__html: \\\`window.__APOLLO_STATE__=${JSON.stringify(initialState).replace(/</g, '\\\\\u003c')};\\\`,
+        		}}></script>
 	            ${js}
 	            ${cssHash}
 			</html>
