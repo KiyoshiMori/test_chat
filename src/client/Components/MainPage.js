@@ -100,9 +100,13 @@ export default class extends Component {
 
 	render() {
 		const { inputText1, inputText2, isTyping } = this.state;
-		const { getMessages: { getMessages }, sender, receiver } = this.props;
+		const { getMessages: { getMessages }, sender, receiver, authorized, loading } = this.props;
 
 		const messages = getMessages?.slice().reverse();
+
+		if (loading) {
+			return <div>Loading...</div>
+		}
 
 		console.log('props', this.props);
 		return (
@@ -119,6 +123,7 @@ export default class extends Component {
 						}}
 					/>
 					<button
+						style={{ backgroundColor: authorized ? 'green' : 'red' }}
 						onClick={() => this.postMessage({ sender, receiver, name: 'inputText1' })}
 					>
 						Send!

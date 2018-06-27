@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider, getDataFromTree } from 'react-apollo';
 import { Provider } from 'react-redux';
 import { flushChunkNames } from 'react-universal-component/server';
 import flushChunks from 'webpack-flush-chunks';
@@ -17,7 +17,8 @@ export default ({ clientStats }) => (req, res) => {
 
 	console.log(process.env);
 
-	const html = (`
+	getDataFromTree(App).then(() => {
+		const html = (`
 			<html>
 				<head>
 					${styles}
@@ -25,13 +26,13 @@ export default ({ clientStats }) => (req, res) => {
 	            <body>
 	                <h1>testFromRender!</h1>
 	                <div id="root">${renderToString(
-	                	<ApolloProvider client={client}>
-		                    <Provider store={store}>
-			                    <StaticRouter location={req.url} context={{}}>
-			                        <App/>
-				                </StaticRouter>
-			                </Provider>
-		                </ApolloProvider>
+						<ApolloProvider client={client}>
+							<Provider store={store}>
+								<StaticRouter location={req.url} context={{}}>
+									<App/>
+								</StaticRouter>
+							</Provider>
+						</ApolloProvider>
 					)}</div>
 	            </body>
 	            ${js}
@@ -39,5 +40,6 @@ export default ({ clientStats }) => (req, res) => {
 			</html>
 		`);
 
-	res.send(html);
+		res.send(html);
+	})
 }
