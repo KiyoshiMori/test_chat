@@ -10,8 +10,10 @@ import MessagesResolver from './messages/MessagesResolver';
 import UserDefinition from './user/UserDefinition.gql';
 import UserResolver from './user/UserResolver';
 
-export default makeExecutableSchema({
+const schema = makeExecutableSchema({
 	typeDefs: [RootDefinition, MessagesDefinition, UserDefinition],
 	resolvers: _.merge({}, RootResolver, MessagesResolver, UserResolver),
 });
-//comment for update gql file12
+
+export default schema;
+module.exports = schema;
