@@ -2,7 +2,8 @@ import React, {Component, Fragment} from 'react';
 import { graphql, withApollo } from 'react-apollo';
 import _ from 'lodash';
 import { getMessages, newMessageSibscription, sendMessage, isTyping, isTypingSubscription } from '../../lib/graphql/queries/messages';
-import { getMyInfo } from '../../lib/graphql/queries/user';
+import { getMyInfo, signup, login } from '../../lib/graphql/queries/user';
+import { verifyPassword, hashPassword } from "../../lib/helpers/passwordHash";
 
 @withApollo
 @graphql(getMyInfo, {
@@ -13,14 +14,16 @@ import { getMyInfo } from '../../lib/graphql/queries/user';
 			const {authorized, ...info} = data?.getMyInfo;
 			return {
 				myInfo: {...info},
-				authorized
+				authorized,
+				user_id: info.id
 			}
 		}
 	}
 })
 @graphql(getMessages, {
 	options: ownProps => ({
-		variables: { receiver: ownProps.receiver, sender: ownProps.sender },
+		skip: ownProps.user_id == null,
+		variables: { receiver: ownProps.user_id, sender: ownProps.sender },
 	}),
 	name: 'getMessages'
 })
@@ -32,8 +35,22 @@ export default class extends Component {
 	};
 
 	async componentDidMount() {
-		const { getMessages, receiver, sender } = this.props;
+		if (this.props.user_id) {
+			this.subscribe();
+		}
+	}
 
+	async componentDidUpdate(prevProps, prevState) {
+		if ((prevProps.user_id == null) && (this.props.user_id != null)) {
+			this.subscribe();
+		}
+	}
+
+
+	subscribe = async () => {
+		const { getMessages, user_id: receiver, sender } = this.props;
+		await getMessages.refetch();
+		console.log(getMessages);
 		getMessages
 			.subscribeToMore({
 				document: newMessageSibscription,
@@ -56,7 +73,7 @@ export default class extends Component {
 		getMessages
 			.subscribeToMore({
 				document: isTypingSubscription,
-				variables: { from: 21, to: 13 },
+				variables: { from: sender, to: receiver },
 				updateQuery: (prev, { subscriptionData }) => {
 					const { isTypingSubscription: { isTyping } } = subscriptionData?.data;
 
@@ -84,7 +101,7 @@ export default class extends Component {
 	};
 
 	isTypingFunc = isTypingBool => {
-		const { client, sender, receiver } = this.props;
+		const { client, sender, user_id: receiver } = this.props;
 
 		if ((this.state.isTyping === true) && (isTypingBool === true)) return;
 
@@ -98,9 +115,20 @@ export default class extends Component {
 		this.isTypingFunc(false);
 	};
 
+	sign = type => {
+		const { client } = this.props;
+		client.mutate({
+			mutation: type === 'login' ? login : signup,
+			variables: { username: 'tester37', password: '123456qwer' },
+			refetchQueries: [{
+				query: getMyInfo
+			}]
+		})
+	};
+
 	render() {
 		const { inputText1, inputText2, isTyping } = this.state;
-		const { getMessages: { getMessages }, sender, receiver, authorized, loading } = this.props;
+		const { getMessages: { getMessages }, sender, user_id: receiver, authorized, loading } = this.props;
 
 		const messages = getMessages?.slice().reverse();
 
@@ -108,6 +136,14 @@ export default class extends Component {
 			return <div>Loading...</div>
 		}
 
+		if (!authorized) return (
+			<Fragment>
+				<div></div>
+				<button onClick={() => this.sign('signup')}>Signup</button>
+				<button onClick={() => this.sign('login')}>Login</button>
+				<div>You are not loggined!</div>
+			</Fragment>
+		);
 		console.log('props', this.props);
 		return (
 			<Fragment>

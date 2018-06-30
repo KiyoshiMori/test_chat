@@ -1,5 +1,5 @@
 exports.up = function(knex, Promise) {
-	knex.schema.hasTable(process.env.DB_NAME).then(exists => {
+	knex.schema.hasTable('message_info').then(exists => {
 		if (!exists) {
 			return knex.schema.createTable('messages_info', t => {
 				t.increments("messageid").primary();

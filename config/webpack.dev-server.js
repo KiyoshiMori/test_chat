@@ -4,6 +4,7 @@ const nodeExternals = require('webpack-node-externals');
 const externals = require('./externals');
 // use minicss-extract-loader here because of bug with ssr and use of style-loader with it is unavaliable
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     name: 'server',
@@ -81,5 +82,6 @@ module.exports = {
 			    NODE_ENV: JSON.stringify('development'),
 		    }
 	    }),
+	    new Dotenv()
     ],
 };

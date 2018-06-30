@@ -1,4 +1,5 @@
 import db from './db';
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 
 export default (server) => {
 	const passport = require('passport');
@@ -10,29 +11,48 @@ export default (server) => {
 		tablename: 'sessions',
 	});
 
-	server.use(require('cookie-parser')());
 	server.use(session({ secret: 'cat', store, saveUninitialized: true, resave: true }));
 	server.use(passport.initialize());
 	server.use(passport.session());
 
-	server.get('/', (req, res, next) => {
+	server.get('*', (req, res, next) => {
 		console.log('USER:', req.user);
-		res.locals.user = req.user;
 		next();
 	});
 
-	server.use('/login', (req, res, next) => {
-		req.login({ id: 13 }, (err) => {
-			console.log('user at login page', req.user);
-			return res.redirect('/');
-		});
+	const cookieExtractor = req => {
+		let token = null;
+		if (req && req.cookies) {
+			token = req.cookies['jwt'];
+		}
+		return token;
+	};
+
+	passport.use(new JWTStrategy({
+		jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+		secretOrKey: process.env.jwtsecret
+	}, ({ username, password }, done) => {
+		console.log({ username, password });
+		db('users')
+			.where({
+				username
+			})
+			.then(info => {
+				done(null, info[0]);
+			})
+			.catch(e => done(e));
+	}));
+
+	server.get('/test', passport.authenticate('jwt', { failureRedirect: '/' }), async (req, res, next) => {
+		console.log('jwt user', req.user);
+		next();
 	});
 
 	passport.serializeUser((user, done) => {
-		done(null, user)
+		done(null, user.id)
 	});
 
-	passport.deserializeUser((user, done) => {
-		done(null, user);
+	passport.deserializeUser((id, done) => {
+		done(null, { id });
 	});
 }

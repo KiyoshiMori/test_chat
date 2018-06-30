@@ -32,7 +32,7 @@ export default class extends Component {
 							<UniversalComponent
 								is={MainPage}
 								onLoad={onLoadText => dispatch(actionTest(onLoadText))}
-								receiver={13}
+								receiver={14}
 								sender={21}
 							/>
 						}

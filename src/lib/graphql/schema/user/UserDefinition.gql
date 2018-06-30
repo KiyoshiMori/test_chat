@@ -3,6 +3,21 @@ type getMyInfoResponse {
     authorized: Boolean
 }
 
+input signInput {
+    username: String!
+    password: String!
+}
+
+type signResponse {
+    token: String!
+    error: String
+}
+
 extend type Query {
     getMyInfo: getMyInfoResponse!
+}
+
+extend type Mutation {
+    login(input: signInput!): signResponse!
+    signup(input: signInput!): signResponse!
 }

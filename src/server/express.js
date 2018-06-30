@@ -1,5 +1,6 @@
 import 'isomorphic-fetch';
 import express from 'express';
+import cors from 'cors';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
@@ -23,12 +24,14 @@ const pubsub = new PostgresPubSub({
 });
 
 server.use(bodyParser.json());
+server.use('*', cors({ origin: `http://${process.env.HOST}:${process.env.PORT}`, credentials: true }));
+server.use(require('cookie-parser')());
 
 const schema = require('../lib/graphql/schema');
 const done = () => {
 	if (isBuilt) return;
 
-	server.listen(process.env.PORT_SERVER, () => {
+	server.listen(process.env.PORT, () => {
 		console.log('server started!');
 	});
 
@@ -45,8 +48,8 @@ const done = () => {
 	})
 };
 
-require('./apiRoutes').default(server, pubsub);
 require('./auth').default(server);
+require('./apiRoutes').default(server, pubsub);
 require('./graphql').default(server, schema, pubsub);
 
 console.log({ isDev });

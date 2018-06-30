@@ -4,13 +4,13 @@ import moment from 'moment';
 
 export default {
 	Query: {
-		async getMessages(_, { input }, { user }) {
-			const res = await rp({
-				uri: `http://localhost:8081/messages?from=${user.id}&to=${input.receiver}`,
+		async getMessages(_, { input }) {
+			const msgres = await rp({
+				uri: `http://localhost:8081/messages?from=${input.sender}&to=${input.receiver}`,
 				json: true
 			});
 
-			return res.response;
+			return msgres.response;
 		}
 	},
 	Mutation: {
@@ -30,8 +30,6 @@ export default {
 				json: true,
 			});
 
-			console.log({ res });
-
 			return res.response;
 		},
 		async isTyping(_, { input }, { pubsub }) {
@@ -46,6 +44,7 @@ export default {
 			resolve: payload => payload,
 			subscribe: withFilter(({ pubsub }) => pubsub.asyncIterator('newMessage'), (payload, variables) => {
 				const { receiver, sender } = variables?.input;
+				console.log({ receiver, sender, messagefrom: payload.messagefrom});
 				return [receiver, sender].indexOf(payload.messagefrom) !== -1;
 			})
 		},

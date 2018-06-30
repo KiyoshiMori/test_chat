@@ -29,14 +29,14 @@ if (process.browser) {
 				reconnect: true,
 			}
 		}),
-		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql`, credentials: 'include' }),
+		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT}/graphql`, credentials: 'include' }),
 	);
 
 	preloadedState = window.__APOLLO_STATE__;
 
 	delete window.__APOLLO_STATE__;
 } else {
-	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT_SERVER}/graphql`, credentials: 'include' });
+	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT}/graphql`, credentials: 'include' });
 }
 
 console.log({ browser: process.browser });

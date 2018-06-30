@@ -23,7 +23,7 @@ export default (server, pubsub) => {
 
 			return res.json({ response });
 		} catch (e) {
-			console.log({ ERROR: e });
+			// console.log({ ERROR: e });
 
 			return res.json({ error: e });
 		}
