@@ -16,7 +16,6 @@ export default (server) => {
 	server.use(passport.session());
 
 	server.get('*', (req, res, next) => {
-		console.log('USER:', req.user);
 		next();
 	});
 
@@ -29,7 +28,7 @@ export default (server) => {
 	};
 
 	passport.use(new JWTStrategy({
-		jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+		jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromBodyField('jwt'), cookieExtractor]),
 		secretOrKey: process.env.jwtsecret
 	}, ({ username, password }, done) => {
 		console.log({ username, password });
@@ -39,8 +38,12 @@ export default (server) => {
 			})
 			.then(info => {
 				done(null, info[0]);
+				return null;
 			})
-			.catch(e => done(e));
+			.catch(e => {
+				done(e);
+				return null;
+			});
 	}));
 
 	server.get('/test', passport.authenticate('jwt', { failureRedirect: '/' }), async (req, res, next) => {
@@ -48,11 +51,16 @@ export default (server) => {
 		next();
 	});
 
+	server.post('/signing', passport.authenticate('jwt'), (req, res, next) => {
+		console.log('test');
+		res.json({ loggined: true });
+	});
+
 	passport.serializeUser((user, done) => {
-		done(null, user.id)
+		return done(null, user.id)
 	});
 
 	passport.deserializeUser((id, done) => {
-		done(null, { id });
+		return done(null, { id });
 	});
 }

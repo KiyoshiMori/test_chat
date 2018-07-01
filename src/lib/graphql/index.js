@@ -34,6 +34,8 @@ if (process.browser) {
 
 	preloadedState = window.__APOLLO_STATE__;
 
+	const apollo_state = document.getElementById('apollo-state');
+	apollo_state.parentElement.removeChild(apollo_state);
 	delete window.__APOLLO_STATE__;
 } else {
 	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT}/graphql`, credentials: 'include' });

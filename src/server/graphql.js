@@ -6,7 +6,8 @@ export default (server, schema, pubsub) => {
 	server.use('/graphql',
 		graphqlExpress((req, res)=> ({
 			schema,
-			context: { user: req.user, pubsub, req, res, db }
+			context: { user: req.user, pubsub, req, res, db },
+			debug: true,
 		}))
 	);
 	server.use('/playground', expressPlayground ({

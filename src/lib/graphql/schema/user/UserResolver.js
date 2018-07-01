@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import rp from 'request-promise';
 import { hashPassword, verifyPassword } from '../../../helpers/passwordHash';
 
 export default {
@@ -18,7 +19,7 @@ export default {
 			const passwordHash = await hashPassword(password);
 			const token = jwt.sign({username, password: passwordHash}, process.env.jwtsecret);
 
-			await db('users')
+			const dbpromise = await db('users')
 				.where({
 					username
 				})
@@ -30,27 +31,41 @@ export default {
 					if (verified) {
 						const { id } = info;
 						res.cookie('jwt', token);
-						return await req.login({ id }, (err) => {
-							if (err) {
-								console.log('some kind of error');
-								return { error: 'some kind of error' }
-							}
+						return await new Promise((resolve, reject) => {
+							const login = response => {
+								resolve(response);
+							};
 
-							console.log('should be', id);
+							req.login({ id }, async (err) => {
+								if (err) {
+									console.log('some kind of error');
+									login({ error: 'some kind of error' });
+								}
 
-							return { token }
-						});
+								await rp({
+									uri: `${req.protocol}://${process.env.HOST}:${process.env.PORT}/signing`,
+									method: 'post',
+									body: { jwt: token },
+									json: true
+								});
+
+								login({ token });
+							});
+
+						})
 					} else {
 						console.log('password is invalid');
-						return { error: 'username or password is invalid' }
+						return Promise.resolve({ error: `username or password is invalid` });
 					}
 				})
-				.catch(() => {
-					console.log('username not found');
-					return { error: 'username or password is invalid'}
+				.catch(e => {
+					console.log('username not found', e);
+					return Promise.resolve({ error: 'username or password is invalid' });
 				});
 
-			return { token }
+			console.log({ dbpromise, user: req.user, session: req.session });
+
+			return dbpromise
 		},
 		async signup(_, { input }, { req, res, db }) {
 			const { username, password } = input;

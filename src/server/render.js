@@ -15,10 +15,22 @@ export default ({ clientStats }) => (req, res) => {
 		chunkNames: flushChunkNames()
 	});
 
-	console.log(process.env);
+	// req.get('/', (req, res) => {
+	// 	console.log(req);
+	// 	res.redirect('/test');
+	// });
+
+	// console.log(req, 'test renderer');
 
 	getDataFromTree(App).then(() => {
 		const initialState = client.extract();
+
+		const reduxState = {
+			user: req.user,
+			isAuth: req.isAuthenticated()
+		};
+
+		const routerContext = {};
 
 		const html = (`
 			<html>
@@ -30,21 +42,30 @@ export default ({ clientStats }) => (req, res) => {
 	                <div id="root">${renderToString(
 						<ApolloProvider client={client}>
 							<Provider store={store}>
-								<StaticRouter location={req.url} context={{}}>
-									<App/>
+								<StaticRouter location={req.url} context={routerContext}>
+									<App />
 								</StaticRouter>
 							</Provider>
 						</ApolloProvider>
 					)}</div>
 	            </body>
-	            <script dangerouslySetInnerHTML={{
-          			__html: \\\`window.__APOLLO_STATE__=${JSON.stringify(initialState).replace(/</g, '\\\\\u003c')};\\\`,
-        		}}></script>
+        		<script id="redux-state">window.__REDUX_STATE__=${JSON.stringify(reduxState)}</script>
+        		<script id="apollo-state">window.__APOLLO_STATE__=${JSON.stringify(initialState)}</script>
 	            ${js}
 	            ${cssHash}
 			</html>
 		`);
 
+		console.log(routerContext, req.user, req.session, 'router context');
+
+		if (routerContext.url) {
+			res.status(302).setHeader('Location', routerContext.url);
+			console.log('TEST', routerContext, routerContext.url);
+			res.end();
+			return;
+		}
+
+		res.status(routerContext.missed ? 404 : 200).send(html);
 		res.send(html);
 	})
 }

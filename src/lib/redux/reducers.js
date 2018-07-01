@@ -7,7 +7,17 @@ export const actionTest = text => ({
 	payload: text,
 });
 
-export const testReducer = (state = {}, action) => {
+let initialState = {};
+
+if (process.browser) {
+	initialState = window.__REDUX_STATE__;
+
+	const redux_state = document.getElementById('redux-state');
+	redux_state.parentElement.removeChild(redux_state);
+	delete window.__REDUX_STATE__;
+}
+
+export const testReducer = (state = initialState, action) => {
 	switch(action.type) {
 		case types.TEST_ACTION:
 			return {

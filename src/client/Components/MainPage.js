@@ -1,25 +1,13 @@
 import React, {Component, Fragment} from 'react';
 import { graphql, withApollo } from 'react-apollo';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import { getMessages, newMessageSibscription, sendMessage, isTyping, isTypingSubscription } from '../../lib/graphql/queries/messages';
 import { getMyInfo, signup, login } from '../../lib/graphql/queries/user';
-import { verifyPassword, hashPassword } from "../../lib/helpers/passwordHash";
+import { testReducer } from "../../lib/redux/reducers";
 
+@connect(testReducer)
 @withApollo
-@graphql(getMyInfo, {
-	props: ({ data }) => {
-		if (data.loading === true) {
-			return { loading: data.loading }
-		} else {
-			const {authorized, ...info} = data?.getMyInfo;
-			return {
-				myInfo: {...info},
-				authorized,
-				user_id: info.id
-			}
-		}
-	}
-})
 @graphql(getMessages, {
 	options: ownProps => ({
 		skip: ownProps.user_id == null,
@@ -49,7 +37,7 @@ export default class extends Component {
 
 	subscribe = async () => {
 		const { getMessages, user_id: receiver, sender } = this.props;
-		await getMessages.refetch();
+		await getMessages.refetch({ receiver, sender });
 		console.log(getMessages);
 		getMessages
 			.subscribeToMore({
@@ -115,15 +103,15 @@ export default class extends Component {
 		this.isTypingFunc(false);
 	};
 
-	sign = type => {
+	sign = async type => {
 		const { client } = this.props;
-		client.mutate({
+		await client.mutate({
 			mutation: type === 'login' ? login : signup,
-			variables: { username: 'tester37', password: '123456qwer' },
+			variables: { username: 'tester39', password: '123456qwer' },
 			refetchQueries: [{
 				query: getMyInfo
 			}]
-		})
+		});
 	};
 
 	render() {

@@ -8,7 +8,8 @@ export default class extends Component {
 		const componentName = is.id.toString().replace(/\//, '').replace(/\./g, '');
 
 		const UC = universal(() => is, {
-			onLoad: () => onLoad(`universal component: ${componentName}, is loaded!`),
+			onLoad: () => typeof onLoad === 'function'
+				&& onLoad(`universal component: ${componentName}, is loaded!`),
 		});
 
 		return <UC {...props} />
