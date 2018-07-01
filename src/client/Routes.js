@@ -61,7 +61,7 @@ export default class extends Component {
 						}
 					/>
 					<Route path="/test" render={() => {
-						return myInfo.authorized
+						return myInfo?.authorized
 							? <h1>testtest</h1>
 							: <Redirect to='/' />
 					}} />

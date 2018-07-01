@@ -46,7 +46,7 @@ export default (server) => {
 			});
 	}));
 
-	server.get('/test', passport.authenticate('jwt', { failureRedirect: '/' }), async (req, res, next) => {
+	server.get('/test', async (req, res, next) => {
 		console.log('jwt user', req.user);
 		next();
 	});

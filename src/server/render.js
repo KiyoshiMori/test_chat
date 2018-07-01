@@ -66,6 +66,6 @@ export default ({ clientStats }) => (req, res) => {
 		}
 
 		res.status(routerContext.missed ? 404 : 200).send(html);
-		res.send(html);
+		// res.send(html);
 	})
 }
