@@ -17,6 +17,7 @@
     "react-hot-loader/babel",
     "universal-import",
     "import-graphql",
-    "@babel/plugin-transform-spread"
+    "@babel/plugin-transform-spread",
+    "styled-components"
   ]
 }

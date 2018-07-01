@@ -1,5 +1,5 @@
-import db from './db';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
+import db from './db';
 
 export default (server) => {
 	const passport = require('passport');
@@ -29,7 +29,7 @@ export default (server) => {
 
 	passport.use(new JWTStrategy({
 		jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromBodyField('jwt'), cookieExtractor]),
-		secretOrKey: process.env.jwtsecret
+		secretOrKey: process.env.jwtsecret,
 	}, ({ username, password }, done) => {
 		console.log({ username, password });
 		db('users')
