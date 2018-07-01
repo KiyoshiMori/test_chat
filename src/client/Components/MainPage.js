@@ -129,7 +129,7 @@ export default class extends Component {
 				<div></div>
 				<button onClick={() => this.sign('signup')}>Signup</button>
 				<button onClick={() => this.sign('login')}>Login</button>
-				<div>You are not loggined!</div>
+				<div>You are not logined!</div>
 			</Fragment>
 		);
 		console.log('props', this.props);
