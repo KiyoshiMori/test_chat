@@ -8,8 +8,9 @@ module.exports = {
 	resolve: {
 		alias: {
 			Styled: path.resolve(__dirname, '../src/lib/styled'),
-			Components: path.resolve(__dirname, '../src/components'),
+			Components: path.resolve(__dirname, '../src/client/components'),
 		},
+		extensions: ['.js', '.jsx'],
 	},
 	entry: {
 		vendor: ['react', 'react-dom'],
@@ -38,7 +39,7 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.jsx?$/,
 				use: [
 					{
 						loader: 'babel-loader',

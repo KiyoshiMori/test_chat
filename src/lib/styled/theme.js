@@ -2,12 +2,12 @@ import { css } from 'Styled';
 
 const MediaSizes = {
 	desktop: 1190,
-	mobile: 630,
+	mobile: 760,
 };
 
 const media = Object.keys(MediaSizes).reduce((acc, label) => {
 	acc[label] = params => css`
-		@media (max-width: ${MediaSizes[label]}px) {
+		@media only screen and (max-width: ${MediaSizes[label]}px) {
 			${css`${params}`};
 		}
 	`;
@@ -15,4 +15,15 @@ const media = Object.keys(MediaSizes).reduce((acc, label) => {
 	return acc;
 }, {});
 
+const theme = {
+	colors: {
+		primary: '#B2EBF2',
+		secondary: '#4DD0E1',
+		light: '#E0F7FA',
+		dark: '#00838F',
+		font: '#37474F',
+	},
+};
+
 export { media };
+export default theme;

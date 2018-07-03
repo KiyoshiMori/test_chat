@@ -18,6 +18,8 @@
     "universal-import",
     "import-graphql",
     "@babel/plugin-transform-spread",
-    "styled-components"
+    ["styled-components", {
+      "ssr": true
+    }]
   ]
 }

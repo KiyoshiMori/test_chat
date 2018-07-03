@@ -5,11 +5,12 @@ import { ApolloProvider, getDataFromTree } from 'react-apollo';
 import { Provider } from 'react-redux';
 import { flushChunkNames } from 'react-universal-component/server';
 import flushChunks from 'webpack-flush-chunks';
-import { StyleSheetManager, ServerStyleSheet } from 'styled-components';
+import { StyleSheetManager, ServerStyleSheet, ThemeProvider } from 'styled-components';
 
 import App from '../client/Routes';
 import store from '../lib/redux/store';
 import { client } from '../lib/graphql';
+import theme from 'Styled/theme';
 
 export default ({ clientStats }) => (req, res) => {
 	const { js, styles, cssHash } = flushChunks(clientStats, {
@@ -32,29 +33,31 @@ export default ({ clientStats }) => (req, res) => {
 			<ApolloProvider client={client}>
 				<Provider store={store}>
 					<StaticRouter location={req.url} context={routerContext}>
-						<StyleSheetManager sheet={sheet.instance}>
-							<App />
-						</StyleSheetManager>
+						<ThemeProvider theme={theme}>
+							<StyleSheetManager sheet={sheet.instance}>
+								<App />
+							</StyleSheetManager>
+						</ThemeProvider>
 					</StaticRouter>
 				</Provider>
 			</ApolloProvider>
 		);
 
 		const html = `
-	<html>
-		<head>
-			${styles}
-		</head>
-		<body>
-			<h1>testFromRender!</h1>
-			<div id="root">${renderToString(app)}</div>
-		</body>
-		<script id="redux-state">window.__REDUX_STATE__=${JSON.stringify(reduxState)}</script>
-		<script id="apollo-state">window.__APOLLO_STATE__=${JSON.stringify(initialState)}</script>
-		${js}
-		${cssHash}
-	</html>
-`;
+			<html>
+				<head>
+					<meta id="viewport" name="viewport" content ="width=device-width" />
+					${styles}
+				</head>
+				<body>
+					<div id="root">${renderToString(app)}</div>
+				</body>
+				<script id="redux-state">window.__REDUX_STATE__=${JSON.stringify(reduxState)}</script>
+				<script id="apollo-state">window.__APOLLO_STATE__=${JSON.stringify(initialState)}</script>
+				${js}
+				${cssHash}
+			</html>
+		`;
 
 		console.log(routerContext, req.user, req.session, 'router context');
 
