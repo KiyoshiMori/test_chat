@@ -1,0 +1,13 @@
+{
+    "parser": "babel-eslint",
+    "plugins": [
+        "prettier"
+    ],
+    "extends": "airbnb",
+    "rules": {
+        "indent": ["error", "tab"],
+        "react/jsx-indent": ["error", "tab"],
+        "react/jsx-indent-props": ["error", "tab"],
+        "no-tabs": 0
+    }
+}

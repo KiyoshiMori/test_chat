@@ -11,18 +11,25 @@ module.exports = {
 	mode: 'development',
 	target: 'node',
 	externals,
+	resolve: {
+		alias: {
+			Styled: path.resolve(__dirname, '../src/lib/styled'),
+			Components: path.resolve(__dirname, '../src/client/components'),
+		},
+		extensions: ['.js', '.jsx'],
+	},
 	entry: './src/server/render.js',
-    output: {
-        filename: 'dev-server-bundle.js',
-	    chunkFilename: '[name].js',
-	    path: path.resolve(__dirname, '../build'),
-	    libraryTarget: "commonjs2"
-    },
+	output: {
+		filename: 'dev-server-bundle.js',
+		chunkFilename: '[name].js',
+		path: path.resolve(__dirname, '../build'),
+		libraryTarget: 'commonjs2',
+	},
 	devtool: 'source-map',
 	module: {
         rules: [
             {
-              test: /\.js$/,
+              test: /\.jsx?$/,
               use: [
                   {
                       loader: "babel-loader"

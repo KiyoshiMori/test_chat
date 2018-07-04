@@ -2,10 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ApolloProvider } from 'react-apollo';
-import { AppContainer } from 'react-hot-loader'
+import { AppContainer } from 'react-hot-loader';
+import { ThemeProvider } from 'styled-components';
 
 import store from './lib/redux/store';
 import { client } from './lib/graphql';
+
+import theme from 'Styled/theme';
 
 import App from './client/AppRoot';
 
@@ -16,7 +19,9 @@ const render = Component => {
 		<ApolloProvider client={client}>
 			<Provider store={store}>
 				<AppContainer>
-					<Component />
+					<ThemeProvider theme={theme}>
+						<Component />
+					</ThemeProvider>
 				</AppContainer>
 			</Provider>
 		</ApolloProvider>,

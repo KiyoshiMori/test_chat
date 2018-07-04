@@ -2,9 +2,12 @@ import React, {Component, Fragment} from 'react';
 import { graphql, withApollo } from 'react-apollo';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { getMessages, newMessageSibscription, sendMessage, isTyping, isTypingSubscription } from '../../lib/graphql/queries/messages';
+import {
+	getMessages, newMessageSibscription, sendMessage, isTyping, isTypingSubscription
+} from '../../lib/graphql/queries/messages';
 import { getMyInfo, signup, login } from '../../lib/graphql/queries/user';
 import { testReducer } from "../../lib/redux/reducers";
+import { Row, Col } from './Grid';
 
 @connect(testReducer)
 @withApollo
@@ -116,7 +119,9 @@ export default class extends Component {
 
 	render() {
 		const { inputText1, inputText2, isTyping } = this.state;
-		const { getMessages: { getMessages }, sender, user_id: receiver, authorized, loading } = this.props;
+		const { getMessages: { getMessages }, sender,
+			user_id: receiver, authorized, loading
+		} = this.props;
 
 		const messages = getMessages?.slice().reverse();
 
@@ -126,10 +131,12 @@ export default class extends Component {
 
 		if (!authorized) return (
 			<Fragment>
-				<div></div>
-				<button onClick={() => this.sign('signup')}>Signup</button>
-				<button onClick={() => this.sign('login')}>Login</button>
-				<div>You are not loggined!</div>
+				<Row>
+					<Col sizeMd={6}>test</Col>
+					<button onClick={() => this.sign('signup')}>Signup</button>
+					<button onClick={() => this.sign('login')}>Login</button>
+					<div>You are not logined!</div>
+				</Row>
 			</Fragment>
 		);
 		console.log('props', this.props);
