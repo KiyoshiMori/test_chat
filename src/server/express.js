@@ -24,14 +24,18 @@ const pubsub = new PostgresPubSub({
 });
 
 server.use(bodyParser.json());
-server.use('*', cors({ origin: `http://${process.env.HOST}:${process.env.PORT}`, credentials: true }));
+server.use('*', cors({
+	origin: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT}`, credentials: true,
+}));
 server.use(require('cookie-parser')());
 
 const schema = require('../lib/graphql/schema');
+
 const done = () => {
 	if (isBuilt) return;
 
 	server.listen(process.env.PORT, () => {
+		isBuilt = true;
 		console.log('server started!');
 	});
 

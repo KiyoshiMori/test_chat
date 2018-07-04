@@ -12,7 +12,9 @@ let preloadedState = null;
 if (process.browser) {
 	console.log({ env: process.env });
 
-	const wsClient = new SubscriptionClient(`ws://${process.env.HOST}:${process.env.PORT_WS}/subscriptions`, {
+	const wsLink = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT_WS_CLIENT}/subscriptions`;
+
+	const wsClient = new SubscriptionClient(wsLink, {
 		reconnect: true,
 	});
 
@@ -21,24 +23,29 @@ if (process.browser) {
 	link = split(
 		({ query }) => {
 			const { kind, operation } = getMainDefinition(query);
-			return kind === 'OperationDefinition' && operation === 'subscription'
+			return kind === 'OperationDefinition' && operation === 'subscription';
 		},
 		new WebSocketLink({
-			uri: `ws://${process.env.HOST}:${process.env.PORT_WS}/subscriptions`,
+			uri: wsLink,
 			options: {
 				reconnect: true,
-			}
+			},
 		}),
-		new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT}/graphql`, credentials: 'include' }),
+		new createHttpLink({
+			uri: `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT_CLIENT}/graphql`,
+			credentials: 'include',
+		}),
 	);
 
 	preloadedState = window.__APOLLO_STATE__;
 
-	const apollo_state = document.getElementById('apollo-state');
-	apollo_state.parentElement.removeChild(apollo_state);
+	const apolloState = document.getElementById('apollo-state');
+	apolloState.parentElement.removeChild(apolloState);
 	delete window.__APOLLO_STATE__;
 } else {
-	link = new createHttpLink({ uri: `http://${process.env.HOST}:${process.env.PORT}/graphql`, credentials: 'include' });
+	link = new createHttpLink({
+		uri: `https://${process.env.HOST}:${process.env.PORT_CLIENT}/graphql`, credentials: 'include',
+	});
 }
 
 console.log({ browser: process.browser });
