@@ -28,6 +28,7 @@ script:
       && cd test_chat
       && rm -rf ./node_modules/ && yarn
       && cp /envs/test_chat.env .env
+      && cp /config/test_chat.json app.json
       && pm2 delete -s test_chat && pm2 start app.json
       && rm -rf ../test_chat-old
       && exit'
