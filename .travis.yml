@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+  - 9.10.1
+cache: yarn
+sudo: required
+addons:
+  ssh_known_hosts:
+    - smits.gq
+branches:
+  only:
+    - master
+    - travis
+before_install:
+  - openssl aes-256-cbc -K $encrypted_187b4afad11d_key -iv $encrypted_187b4afad11d_iv
+    -in travis_key.enc -out travis_key -d
+  - bash ./travis_scripts/install.sh
+script:
+  - sudo apt-get update
+  - sudo apt-get install -y --no-install-recommends zip
+  - zip -q -r test_chat.zip .
+  - ls -l test_chat.zip
+  - scp -v -C test_chat.zip root@smits.gq:/var/www/
+  - ssh root@smits.gq 'cd /var/www/
+      && mkdir -p test_chat-new
+      && unzip -qo test_chat.zip -d test_chat-new
+      && rm -f test_chat.zip
+      && mv test_chat test_chat-old
+      && mv test_chat-new test_chat
+      && cd test_chat
+      && rm -rf ./node_modules/ && yarn
+      && cp /envs/test_chat.env .env
+      && cp /config/test_chat.json app.json
+      && pm2 delete -s test_chat && pm2 start app.json
+      && rm -rf ../test_chat-old
+      && exit'

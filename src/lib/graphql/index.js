@@ -12,7 +12,7 @@ let preloadedState = null;
 if (process.browser) {
 	console.log({ env: process.env });
 
-	const wsLink = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.PORT_WS_CLIENT}/subscriptions`;
+	const wsLink = `${process.env.PROTOCOL_WS}://${process.env.HOST}:${process.env.PORT_WS_CLIENT}/subscriptions`;
 
 	const wsClient = new SubscriptionClient(wsLink, {
 		reconnect: true,
