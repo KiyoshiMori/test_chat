@@ -22,6 +22,8 @@ const theme = {
 		light: '#E0F7FA',
 		dark: '#00838F',
 		font: '#37474F',
+		error: '#e53935',
+		errorDark: '#ab000d',
 	},
 	shadow: '0 0 20px rgba(0, 0, 0, 0.35)',
 };

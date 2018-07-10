@@ -10,6 +10,7 @@ const Col = styled.div`
 		const width = size => `${singleColWidth * (size || props.size)}%`;
 
 		return css`
+			position: relative;
 			width: ${width(props.size)};
 			padding: 0 20px;
 			margin: ${props => props.margin};

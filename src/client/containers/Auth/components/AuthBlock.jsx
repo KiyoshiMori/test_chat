@@ -4,6 +4,7 @@ import styled from 'Styled';
 import { Row, Col } from 'Components/Grid';
 import Input from 'Components/Input';
 import Button from 'Components/Button';
+import Alert from 'Components/Alert';
 
 
 // max-height: 250px;
@@ -22,7 +23,7 @@ const AuthWrapper = styled.div`
 
 export default class AuthBLock extends PureComponent {
 	render() {
-		const { values, handleInput, login, isRegistration } = this.props;
+		const { values, handleInput, login, isRegistration, error } = this.props;
 
 		const { username = '', password = '', confirmPassword = '' } = values;
 
@@ -55,9 +56,10 @@ export default class AuthBLock extends PureComponent {
 						<Button
 							onClick={() => login({ username, password })}
 						>
-							<h2>{isRegistration ? 'LOGIN' : 'REGISTER'}</h2>
+							<h2>{isRegistration ? 'REGISTER' : 'LOGIN'}</h2>
 						</Button>
 					</AuthWrapper>
+					{error && <Alert>{error}</Alert>}
 				</Col>
 			</Row>
 		);

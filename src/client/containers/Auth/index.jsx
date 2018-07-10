@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { graphql } from 'react-apollo';
 import { Redirect } from 'react-router';
 
@@ -7,8 +7,6 @@ import { ButtonsContext } from '../../../lib/context/headerButtons';
 
 import { login } from '../../../lib/graphql/queries/user';
 import { auth } from '../../../lib/redux/thunk';
-
-import Button from 'Components/Button';
 
 @graphql(login, {
 	name: 'login',

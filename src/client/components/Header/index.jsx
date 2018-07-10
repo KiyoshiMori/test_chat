@@ -51,7 +51,7 @@ class HeaderComponent extends PureComponent {
 						</Button>
 					</FlexWrapper>
 					<FlexWrapper end>
-						{headerButtons?.map(button => renderButtons(button))}
+						{headerButtons?.map(button => button != null && renderButtons(button))}
 					</FlexWrapper>
 				</Header>
 			</Fragment>
