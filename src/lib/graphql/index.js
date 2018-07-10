@@ -55,6 +55,7 @@ const client = new ApolloClient({
 	cache: new InMemoryCache(),
 	ssrMode: !process.browser,
 	initialState: preloadedState,
+	connectToDevTools: true,
 });
 
 export { client };

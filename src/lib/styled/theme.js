@@ -23,6 +23,7 @@ const theme = {
 		dark: '#00838F',
 		font: '#37474F',
 	},
+	shadow: '0 0 20px rgba(0, 0, 0, 0.35)',
 };
 
 export { media };

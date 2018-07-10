@@ -7,6 +7,7 @@ import { Menu } from 'styled-icons/material';
 const Header = styled.div`
 	display: flex;
 	background-color: ${props => props.theme.colors.secondary};
+	box-shadow: ${props => props.theme.shadow};
 	padding: 0 45px;
 	height: 80px;
 	justify-content: space-between;
@@ -41,7 +42,7 @@ class HeaderComponent extends PureComponent {
 					</FlexWrapper>
 					<FlexWrapper end>
 						<Button>
-							<h1>LOGIN</h1>
+							<h2>REGISTRATION</h2>
 						</Button>
 					</FlexWrapper>
 				</Header>

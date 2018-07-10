@@ -50,6 +50,7 @@ export default ({ clientStats }) => (req, res) => {
 			<html>
 				<head>
 					<meta id="viewport" name="viewport" content ="width=device-width" />
+					<link href="https://fonts.googleapis.com/css?family=Gaegu" rel="stylesheet">
 					${styles}
 				</head>
 				<body>

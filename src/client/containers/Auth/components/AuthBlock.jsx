@@ -9,6 +9,7 @@ const AuthWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	background-color: ${props => props.theme.colors.secondary};
+	box-shadow: ${props => props.theme.shadow};
 	border-radius: 30px;
 	max-height: 250px;
 	height: 100%;
@@ -24,9 +25,9 @@ export default class AuthBLock extends PureComponent {
 				<Col size={3} margin="0 0 150px">
 					<AuthWrapper>
 						<Input label="Username" />
-						<Input label="Password" />
+						<Input label="Password" type="password" />
 						<Button>
-							<h2>Login</h2>
+							<h2>LOGIN</h2>
 						</Button>
 					</AuthWrapper>
 				</Col>

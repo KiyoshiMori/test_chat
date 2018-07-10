@@ -12,7 +12,7 @@ import Page from 'Components/Page';
 import Header from 'Components/Header';
 
 const MainPage = import('./components/MainPage');
-const AuthPage = import('./blocks/Auth/index');
+const AuthPage = import('./containers/Auth');
 
 @withApollo
 @withRouter
