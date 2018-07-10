@@ -1,16 +1,17 @@
 import React from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToString, renderToNodeStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { ApolloProvider, getDataFromTree } from 'react-apollo';
 import { Provider } from 'react-redux';
 import { flushChunkNames } from 'react-universal-component/server';
 import flushChunks from 'webpack-flush-chunks';
-import { StyleSheetManager, ServerStyleSheet, ThemeProvider } from 'styled-components';
+import { StyleSheetManager, ServerStyleSheet, ThemeProvider, injectGlobal } from 'styled-components';
 
 import App from '../client/Routes';
 import store from '../lib/redux/store';
 import { client } from '../lib/graphql';
 import theme from 'Styled/theme';
+import globalStyles from 'Styled/globalStyles';
 
 export default ({ clientStats }) => (req, res) => {
 	const { js, styles, cssHash } = flushChunks(clientStats, {
@@ -18,6 +19,7 @@ export default ({ clientStats }) => (req, res) => {
 	});
 
 	const sheet = new ServerStyleSheet();
+	injectGlobal`${globalStyles}`;
 
 	getDataFromTree(App).then(() => {
 		const initialState = client.extract();
@@ -43,6 +45,7 @@ export default ({ clientStats }) => (req, res) => {
 			</ApolloProvider>
 		);
 
+		// ${renderToString(app)}
 		const html = `
 			<html>
 				<head>
@@ -50,14 +53,21 @@ export default ({ clientStats }) => (req, res) => {
 					${styles}
 				</head>
 				<body>
-					<div id="root">${renderToString(app)}</div>
-				</body>
-				<script id="redux-state">window.__REDUX_STATE__=${JSON.stringify(reduxState)}</script>
-				<script id="apollo-state">window.__APOLLO_STATE__=${JSON.stringify(initialState)}</script>
-				${js}
-				${cssHash}
-			</html>
-		`;
+					<div id="root">`;
+		const html2 = `
+			</div>
+			</body>
+			<script id="redux-state">window.__REDUX_STATE__=${JSON.stringify(reduxState)}</script>
+			<script id="apollo-state">window.__APOLLO_STATE__=${JSON.stringify(initialState)}</script>
+			${js}
+			${cssHash}
+		</html>`;
+
+		res.write(html);
+
+		const stream = sheet.interleaveWithNodeStream(renderToNodeStream(app));
+
+		stream.pipe(res, { end: false });
 
 		console.log(routerContext, req.user, req.session, 'router context');
 
@@ -68,6 +78,7 @@ export default ({ clientStats }) => (req, res) => {
 			return;
 		}
 
-		res.status(routerContext.missed ? 404 : 200).send(html);
+		stream.on('end', () => res.end(html2));
+		// res.status(routerContext.missed ? 404 : 200).send(html);
 	});
 };
