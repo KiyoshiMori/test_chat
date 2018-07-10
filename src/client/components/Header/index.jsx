@@ -7,6 +7,7 @@ import { Menu } from 'styled-icons/material';
 const Header = styled.div`
 	display: flex;
 	background-color: ${props => props.theme.colors.secondary};
+	box-shadow: ${props => props.theme.shadow};
 	padding: 0 45px;
 	height: 80px;
 	justify-content: space-between;
@@ -31,6 +32,14 @@ class HeaderComponent extends PureComponent {
 	};
 
 	render() {
+		const { headerButtons } = this.props;
+
+		const renderButtons = button => (
+			<Button onClick={button.onClick}>
+				<h2>{button.text}</h2>
+			</Button>
+		);
+
 		return (
 			<Fragment>
 				<Header>
@@ -40,9 +49,7 @@ class HeaderComponent extends PureComponent {
 						</Button>
 					</FlexWrapper>
 					<FlexWrapper end>
-						<Button>
-							<h1>LOGIN</h1>
-						</Button>
+						{headerButtons?.map(button => button != null && renderButtons(button))}
 					</FlexWrapper>
 				</Header>
 			</Fragment>

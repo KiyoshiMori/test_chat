@@ -52,9 +52,10 @@ console.log({ browser: process.browser });
 
 const client = new ApolloClient({
 	link,
-	cache: new InMemoryCache(),
+	cache: new InMemoryCache().restore(preloadedState),
 	ssrMode: !process.browser,
 	initialState: preloadedState,
+	connectToDevTools: true,
 });
 
 export { client };

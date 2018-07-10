@@ -1,12 +1,3 @@
-const types = {
-	TEST_ACTION: "TEST_ACTION"
-};
-
-export const actionTest = text => ({
-	type: types.TEST_ACTION,
-	payload: text,
-});
-
 let initialState = {};
 
 if (process.browser) {
@@ -15,17 +6,33 @@ if (process.browser) {
 	const redux_state = document.getElementById('redux-state');
 	redux_state.parentElement.removeChild(redux_state);
 	delete window.__REDUX_STATE__;
+
+	console.log(initialState);
 }
 
-export const testReducer = (state = initialState, action) => {
+const types = {
+	AUTH: "AUTH",
+};
+
+export const actions = {
+	authorize: data => ({
+		type: types.AUTH,
+		payload: {
+			isAuth: data.isAuth,
+			loading: data.loading,
+			error: data.error
+		}
+	}),
+};
+
+export const authReducer = (state = initialState, action) => {
 	switch(action.type) {
-		case types.TEST_ACTION:
+		case types.AUTH:
 			return {
 				...state,
-				test: {
-					...state.test,
-					payload: action.payload,
-				}
+				authorization: {
+					...action.payload
+				},
 			};
 		default:
 			return state;
