@@ -17,53 +17,36 @@ const AuthPage = import('./containers/Auth');
 @withApollo
 @withRouter
 @connect(authReducer)
-@graphql(getMyInfo, {
-	options: {
-		ssr: false,
-	},
-	props: ({ data }) => {
-		console.log({ data });
-
-		if (data.loading === true) {
-			return { loading: data.loading };
-		} else {
-			const { authorized, ...info } = data?.getMyInfo;
-			return {
-				myInfo: {
-					info: { ...info },
-					authorized,
-					user_id: info.id,
-					infoRefetch: data.refetch,
-				},
-			};
-		}
-	},
-})
 export default class extends Component {
-	render() {
-		const { dispatch, myInfo, loading } = this.props;
+	state = {
+		headerButtons: [{
+			text: null,
+			func: () => null,
+		}]
+	};
 
-		console.log(this.props);
+	setHeaderButtons = buttons => this.setState({ headerButtons: buttons });
+
+	render() {
+		const { dispatch, authorization } = this.props;
+		const { headerButtons } = this.state;
 
 		return (
 			<Page>
-				<Header />
-				{loading
-					? <div>Loading...</div>
-					: (
-						<Switch>
-							<Route
-								exact path="/"
-								render={() =>
-									<UniversalComponent
-										is={AuthPage}
-										{...myInfo}
-									/>
-								}
+				<Header headerButtons={headerButtons} />
+				<Switch>
+					<Route
+						exact path="/"
+						render={() =>
+							<UniversalComponent
+								is={AuthPage}
+								dispatch={dispatch}
+								authorization={authorization}
+								setHeaderButtons={this.setHeaderButtons}
 							/>
-						</Switch>
-					)
-				}
+						}
+					/>
+				</Switch>
 			</Page>
 		);
 	}

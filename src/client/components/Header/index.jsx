@@ -4,6 +4,8 @@ import styled, { css } from 'Styled';
 import Button from 'Components/Button';
 import { Menu } from 'styled-icons/material';
 
+import { ButtonsContext } from '../../../lib/context/headerButtons';
+
 const Header = styled.div`
 	display: flex;
 	background-color: ${props => props.theme.colors.secondary};
@@ -32,6 +34,14 @@ class HeaderComponent extends PureComponent {
 	};
 
 	render() {
+		const { headerButtons } = this.props;
+
+		const renderButtons = button => (
+			<Button onClick={button.onClick}>
+				<h2>{button.text}</h2>
+			</Button>
+		);
+
 		return (
 			<Fragment>
 				<Header>
@@ -41,9 +51,7 @@ class HeaderComponent extends PureComponent {
 						</Button>
 					</FlexWrapper>
 					<FlexWrapper end>
-						<Button>
-							<h2>REGISTRATION</h2>
-						</Button>
+						{headerButtons?.map(button => renderButtons(button))}
 					</FlexWrapper>
 				</Header>
 			</Fragment>

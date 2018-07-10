@@ -9,7 +9,7 @@ input signInput {
 }
 
 type signResponse {
-    token: String!
+    token: String
     error: String
 }
 

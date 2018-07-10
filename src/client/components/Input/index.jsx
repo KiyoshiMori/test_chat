@@ -1,6 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'Styled';
+
+const Wrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+`;
 
 const Input = styled.input`
 	color: ${props => props.theme.colors.font};
@@ -45,7 +52,7 @@ class InputComponent extends Component {
 		const { focused } = this.state;
 
 		return (
-			<div>
+			<Wrapper>
 				{label && (
 					<Label focused={focused}>
 						{label}
@@ -60,7 +67,7 @@ class InputComponent extends Component {
 						this.blur();
 					}}
 				/>
-			</div>
+			</Wrapper>
 		);
 	}
 }

@@ -20,6 +20,7 @@ export const actions = {
 		payload: {
 			isAuth: data.isAuth,
 			loading: data.loading,
+			error: data.error
 		}
 	}),
 };
