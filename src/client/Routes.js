@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withApollo, graphql } from 'react-apollo';
-import { actionTest, testReducer } from '../lib/redux/reducers';
+import { authReducer } from '../lib/redux/reducers';
 import { getMyInfo } from '../lib/graphql/queries/user';
 
 import UniversalComponent from './components/UniversalComponent';
@@ -16,8 +16,11 @@ const AuthPage = import('./containers/Auth');
 
 @withApollo
 @withRouter
-@connect(testReducer)
+@connect(authReducer)
 @graphql(getMyInfo, {
+	options: {
+		ssr: false,
+	},
 	props: ({ data }) => {
 		console.log({ data });
 
@@ -40,22 +43,27 @@ export default class extends Component {
 	render() {
 		const { dispatch, myInfo, loading } = this.props;
 
+		console.log(this.props);
+
 		return (
 			<Page>
 				<Header />
-				<Switch>
-					<Route
-						exact path="/"
-						render={() =>
-							<UniversalComponent
-								is={AuthPage}
-								// onLoad={onLoadText => dispatch(actionTest(onLoadText))}
-								loading={loading}
-								{...myInfo}
+				{loading
+					? <div>Loading...</div>
+					: (
+						<Switch>
+							<Route
+								exact path="/"
+								render={() =>
+									<UniversalComponent
+										is={AuthPage}
+										{...myInfo}
+									/>
+								}
 							/>
-						}
-					/>
-				</Switch>
+						</Switch>
+					)
+				}
 			</Page>
 		);
 	}

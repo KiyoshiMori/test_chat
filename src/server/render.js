@@ -25,8 +25,9 @@ export default ({ clientStats }) => (req, res) => {
 		const initialState = client.extract();
 
 		const reduxState = {
-			user: req.user,
-			isAuth: req.isAuthenticated(),
+			authorization: {
+				isAuth: req.isAuthenticated(),
+			},
 		};
 
 		const routerContext = {};
@@ -51,6 +52,7 @@ export default ({ clientStats }) => (req, res) => {
 				<head>
 					<meta id="viewport" name="viewport" content ="width=device-width" />
 					<link href="https://fonts.googleapis.com/css?family=Gaegu" rel="stylesheet">
+					<link href="https://fonts.googleapis.com/css?family=Pangolin" rel="stylesheet">
 					${styles}
 				</head>
 				<body>

@@ -13,6 +13,7 @@ const Input = styled.input`
 	height: ${props => props.height};
 	padding: 0 10px;
 	margin-bottom: 25px;
+	font-family: inherit;
 	&:focus {
 		box-shadow: ${props => `0 0 10px ${props.theme.colors.dark}`};
 	}

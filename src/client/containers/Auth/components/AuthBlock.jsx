@@ -21,10 +21,10 @@ const AuthWrapper = styled.div`
 export default class AuthBLock extends PureComponent {
 	render() {
 		return (
-			<Row centered verticalCentered height="calc(100% - 150px)">
+			<Row centered verticalCentered withHeader height="100%">
 				<Col size={3} margin="0 0 150px">
 					<AuthWrapper>
-						<Input label="Username" />
+						<Input label="UsernameТест" />
 						<Input label="Password" type="password" />
 						<Button>
 							<h2>LOGIN</h2>
