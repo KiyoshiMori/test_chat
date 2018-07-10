@@ -40,13 +40,21 @@ export default class AuthContainer extends Component {
 	};
 
 	componentWillMount() {
+		const { history, authorization } = this.props;
 		this.setHeaderButtons();
+		authorization?.isAuth && history.push('/test', {animate: true});
 	}
 
 
 	componentDidUpdate(prevProps, prevState) {
+		const { history, authorization } = this.props;
+
 		if (prevState.isRegistration !== this.state.isRegistration) {
 			this.setHeaderButtons();
+		}
+
+		if ((prevProps.authorization.isAuth !== authorization.isAuth) && (authorization.isAuth === true)) {
+			history.push('/test', {animate: true});
 		}
 	}
 
@@ -71,12 +79,8 @@ export default class AuthContainer extends Component {
 	);
 
 	render() {
-		const { authorization } = this.props;
+		const { authorization, history } = this.props;
 		const { username, password, confirmPassword, isRegistration } = this.state;
-
-		if (authorization?.isAuth) return (
-			<Redirect to="/test" />
-		);
 
 		return (
 			<AuthBlock
