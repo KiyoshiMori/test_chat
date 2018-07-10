@@ -4,8 +4,6 @@ import styled, { css } from 'Styled';
 import Button from 'Components/Button';
 import { Menu } from 'styled-icons/material';
 
-import { ButtonsContext } from '../../../lib/context/headerButtons';
-
 const Header = styled.div`
 	display: flex;
 	background-color: ${props => props.theme.colors.secondary};

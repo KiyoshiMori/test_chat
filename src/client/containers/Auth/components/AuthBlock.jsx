@@ -23,7 +23,7 @@ const AuthWrapper = styled.div`
 
 export default class AuthBLock extends PureComponent {
 	render() {
-		const { values, handleInput, login, isRegistration, error } = this.props;
+		const { values, handleInput, auth, isRegistration, error } = this.props;
 
 		const { username = '', password = '', confirmPassword = '' } = values;
 
@@ -54,7 +54,7 @@ export default class AuthBLock extends PureComponent {
 							/>
 						)}
 						<Button
-							onClick={() => login({ username, password })}
+							onClick={() => auth({ username, password })}
 						>
 							<h2>{isRegistration ? 'REGISTER' : 'LOGIN'}</h2>
 						</Button>

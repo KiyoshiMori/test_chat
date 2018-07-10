@@ -3,13 +3,15 @@ import { graphql } from 'react-apollo';
 import { Redirect } from 'react-router';
 
 import { AuthBlock } from './components';
-import { ButtonsContext } from '../../../lib/context/headerButtons';
 
-import { login } from '../../../lib/graphql/queries/user';
+import { login, signup } from '../../../lib/graphql/queries/user';
 import { auth } from '../../../lib/redux/thunk';
 
 @graphql(login, {
 	name: 'login',
+})
+@graphql(signup, {
+	name: 'registration',
 })
 export default class AuthContainer extends Component {
 	state = {
@@ -23,11 +25,13 @@ export default class AuthContainer extends Component {
 		this.setState(state => ({ isRegistration: !state.isRegistration }))
 	);
 
-	setHeaderButtons = () => {
+	setHeaderButtons = remove => {
 		const { setHeaderButtons } = this.props;
 		const { isRegistration } = this.state;
 
-		setHeaderButtons([
+		if (remove) return setHeaderButtons([null]);
+
+		return setHeaderButtons([
 			{
 				text: isRegistration ? 'LOGIN' : 'REGISTRATION',
 				onClick: this.toggleLogReg
@@ -46,11 +50,19 @@ export default class AuthContainer extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		this.setHeaderButtons(true);
+	}
 
-	login = async ({ username, password }) => {
-		const { login, dispatch } = this.props;
+	authFunc = async ({ username, password }) => {
+		const { login, registration, dispatch } = this.props;
+		const { isRegistration } = this.state;
+
 		dispatch(auth(
-			login({ variables: { username, password } })
+			isRegistration
+				? registration({ variables: { username, password } })
+				: login({ variables: { username, password } }),
+			isRegistration
 		));
 	};
 
@@ -68,7 +80,7 @@ export default class AuthContainer extends Component {
 
 		return (
 			<AuthBlock
-				login={this.login}
+				auth={this.authFunc}
 				loading={authorization?.loading}
 				error={authorization?.error}
 				handleInput={this.handleInput}

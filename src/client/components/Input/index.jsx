@@ -21,6 +21,7 @@ const Input = styled.input`
 	padding: 0 10px;
 	margin-bottom: 25px;
 	font-family: inherit;
+	font-size: 18px;
 	&:focus {
 		box-shadow: ${props => `0 0 10px ${props.theme.colors.dark}`};
 	}
@@ -32,6 +33,7 @@ const Label = styled.p`
 	margin: 0;
 	padding: 0 15px;
 	color: ${props => props.theme.colors.font};
+	font-size: 16px;
 `;
 
 class InputComponent extends Component {

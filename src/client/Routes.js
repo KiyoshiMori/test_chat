@@ -19,10 +19,7 @@ const AuthPage = import('./containers/Auth');
 @connect(authReducer)
 export default class extends Component {
 	state = {
-		headerButtons: [{
-			text: null,
-			func: () => null,
-		}]
+		headerButtons: [null]
 	};
 
 	setHeaderButtons = buttons => this.setState({ headerButtons: buttons });

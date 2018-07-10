@@ -55,10 +55,8 @@ export default ({ clientStats }) => (req, res) => {
 					<link href="https://fonts.googleapis.com/css?family=Pangolin" rel="stylesheet">
 					${styles}
 				</head>
-				<body>
-					<div id="root">`;
-		const html2 = `
-			</div>
+				<body><div id="root">`;
+		const html2 = `</div>
 			</body>
 			<script id="redux-state">window.__REDUX_STATE__=${JSON.stringify(reduxState)}</script>
 			<script id="apollo-state">window.__APOLLO_STATE__=${JSON.stringify(initialState)}</script>
