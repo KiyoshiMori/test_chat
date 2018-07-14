@@ -11,7 +11,7 @@ const Button = styled.div`
 	height: 45px;
 	margin: ${props => props.noMargin ? '0 0' : '0 115px'};
 	background-color: ${props => !props.noBg && props.theme.colors.primary};
-	box-shadow: ${props => !props.noBg && '0 0 10px rgba(0, 0, 0, 0.25)'};
+	box-shadow: ${props => !props.noBg && props.theme.shadow};
 	border-radius: 15px;
 	font-size: 12px;
 	color: ${props => props.theme.colors.font};
