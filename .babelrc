@@ -3,21 +3,21 @@
     [
       "@babel/preset-env",
       {
-        "debug": true
+        "debug": true,
+        "useBuiltIns": "usage"
       }
     ],
-    ["@babel/preset-stage-0", {
-      "decoratorsLegacy": true,
-      "useBuiltIns": true
-    }],
     "@babel/preset-react"
   ],
   "plugins": [
     "@babel/syntax-dynamic-import",
+    "@babel/plugin-transform-spread",
+    "@babel/plugin-proposal-optional-chaining",
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties", { "loose": false }],
+    "import-graphql",
     "react-hot-loader/babel",
     "universal-import",
-    "import-graphql",
-    "@babel/plugin-transform-spread",
     ["styled-components", {
       "ssr": true
     }]

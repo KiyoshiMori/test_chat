@@ -1,0 +1,17 @@
+parser: babel-eslint
+
+plugins: [
+    prettier
+]
+
+extends: airbnb
+
+rules:
+    indent: [error, tab]
+    react/jsx-indent: [error, tab]
+    react/jsx-indent-props: [error, tab]
+    arrow-parens: [error, as-needed]
+    no-confusing-arrow: [error, {allowParens: true}]
+    no-tabs: 0
+    react/prop-types: [1]
+    import/no-unresolved: off
